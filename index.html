@@ -519,6 +519,51 @@
     navigator.serviceWorker.register('./sw.js');
   }
 </script>
+<!-- 1. Cargamos el núcleo, autenticación y base de datos de Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // 2. Tu configuración oficial de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyAL-unKsFkwOw9_-uNo3TBa-eOkLXXlr-Q",
+    authDomain: "gato-negr0-inventario.firebaseapp.com",
+    projectId: "gato-negr0-inventario",
+    storageBucket: "gato-negr0-inventario.firebasestorage.app",
+    messagingSenderId: "960767649336",
+    appId: "1:960767649336:web:9e7cc599bb519fc8bc28cd"
+  };
+
+  // 3. Inicializar Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // 4. Función para Iniciar Sesión con Google
+  function iniciarSesionConGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then((result) => {
+        console.log("Usuario autenticado:", result.user.email);
+      })
+      .catch((error) => {
+        console.error("Error al iniciar sesión:", error.message);
+        alert("Error al iniciar sesión: " + error.message);
+      });
+  }
+
+  // 5. Escuchar cambios de estado de sesión
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      console.log("Sesión activa para:", user.email);
+      // Aquí mostraremos el inventario cuando el usuario haya ingresado
+    } else {
+      console.log("No hay usuario autenticado.");
+      // Aquí mostraremos la pantalla de inicio de sesión
+    }
+  });
+</script>
 
 </body>
 </html>
