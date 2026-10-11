@@ -16,15 +16,16 @@
 </head>
 <body class="bg-slate-50 text-slate-800 pb-24">
 
-    <!-- PANTALLA DE BLOQUEO (LOGIN) -->
+    <!-- PANTALLA DE BLOQUEO (LOGIN) CON LOGO -->
     <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-6 shadow-2xl">
-            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-2xl">
-                <i class="fa-solid fa-lock"></i>
+            <!-- Logo del Gato -->
+            <div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto overflow-hidden shadow-inner border border-blue-100">
+                <img src="279696.png" alt="Gato Negro Logo" class="w-full h-full object-cover">
             </div>
             <div>
-                <h2 class="text-xl font-bold text-slate-900">Acceso Privado</h2>
-                <p class="text-xs text-slate-500 mt-1">Exclusivo para personal de Gato Negro Bikers</p>
+                <h2 class="text-xl font-bold text-slate-900">Gato Negro Bikers</h2>
+                <p class="text-xs text-slate-500 mt-1">Acceso privado y seguro al inventario</p>
             </div>
             
             <button onclick="iniciarSesionConGoogle()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-3 text-sm transition shadow-md">
@@ -36,11 +37,12 @@
         </div>
     </div>
 
-    <!-- Header -->
+    <!-- Header con Logo -->
     <header class="bg-blue-600 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-boxes-stacked"></i> Control de Negocio
+            <h1 class="text-base font-bold flex items-center gap-2.5">
+                <img src="279696.png" alt="Logo" class="w-7 h-7 rounded-lg object-cover bg-white/10 border border-white/20">
+                <span>Gato Negro Taller</span>
             </h1>
             <div class="flex items-center gap-2">
                 <button onclick="exportarDatos()" class="text-xs bg-blue-700 hover:bg-blue-800 px-3 py-1.5 rounded-lg font-medium transition">
@@ -337,13 +339,26 @@
 
                 contenedor.innerHTML += `
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                        <div class="space-y-1">
+                        <div class="space-y-1.5">
                             <div class="flex items-center gap-2">
                                 <h3 class="font-bold text-slate-800">${p.nombre}</h3>
                                 <span class="text-[10px] px-2 py-0.5 rounded-full border ${badgeColor} font-semibold">${estadoTexto}</span>
                             </div>
                             <p class="text-xs text-slate-500">Cat: ${p.categoria || 'General'} | Precio: $${Number(p.precio || 0).toFixed(2)}</p>
-                            <p class="text-xs font-semibold text-slate-700">Stock: ${p.cantidad} unidades</p>
+                            
+                            <!-- Control Rápido de Stock (+ y -) -->
+                            <div class="flex items-center gap-3 pt-1">
+                                <span class="text-xs font-bold text-slate-700">Stock: ${p.cantidad}</span>
+                                <div class="flex items-center bg-slate-100 rounded-lg overflow-hidden border border-slate-200 text-xs shadow-sm">
+                                    <button onclick="cambiarCantidadRapida('${p.id}', -1)" class="px-2.5 py-1 hover:bg-rose-100 hover:text-rose-600 text-slate-600 transition" title="Restar 1">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </button>
+                                    <span class="px-1 text-slate-300">|</span>
+                                    <button onclick="cambiarCantidadRapida('${p.id}', 1)" class="px-2.5 py-1 hover:bg-emerald-100 hover:text-emerald-600 text-slate-600 transition" title="Sumar 1">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div class="flex items-center gap-1">
                             <button onclick="editarPieza('${p.id}')" class="p-2 text-slate-400 hover:text-blue-600 transition"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -351,6 +366,19 @@
                         </div>
                     </div>
                 `;
+            });
+        }
+
+        async function cambiarCantidadRapida(id, cambio) {
+            const pieza = inventario.find(p => p.id === id);
+            if (!pieza) return;
+
+            const nuevaCantidad = (pieza.cantidad || 0) + cambio;
+            if (nuevaCantidad < 0) return;
+
+            await db.collection('inventario').doc(id).update({
+                cantidad: nuevaCantidad,
+                fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
 
@@ -507,12 +535,10 @@
                 return;
             }
 
-            // Descontar inventario en Firestore
             await db.collection('inventario').doc(piezaId).update({
                 cantidad: piezaObj.cantidad - cantidad
             });
 
-            // Agregar a pintura
             await db.collection('pintura').add({
                 piezaId: piezaObj.id,
                 nombre: piezaObj.nombre,
@@ -599,7 +625,6 @@
             a.click();
         }
 
-        // Registrar Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js');
         }
