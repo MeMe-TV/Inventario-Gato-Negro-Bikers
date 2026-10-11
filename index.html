@@ -4,7 +4,7 @@
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Inventario y Taller</title>
+    <title>Gestión de Inventario y Taller - Gato Negro Bikers</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -16,15 +16,40 @@
 </head>
 <body class="bg-slate-50 text-slate-800 pb-24">
 
+    <!-- PANTALLA DE BLOQUEO (LOGIN) -->
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-6 shadow-2xl">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-slate-900">Acceso Privado</h2>
+                <p class="text-xs text-slate-500 mt-1">Exclusivo para personal de Gato Negro Bikers</p>
+            </div>
+            
+            <button onclick="iniciarSesionConGoogle()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-3 text-sm transition shadow-md">
+                <i class="fa-brands fa-google text-lg"></i>
+                <span>Iniciar con Google</span>
+            </button>
+
+            <div id="login-error" class="hidden text-xs bg-rose-50 border border-rose-200 text-rose-600 p-3 rounded-xl"></div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="bg-blue-600 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="text-lg font-bold flex items-center gap-2">
                 <i class="fa-solid fa-boxes-stacked"></i> Control de Negocio
             </h1>
-            <button onclick="exportarDatos()" class="text-xs bg-blue-700 hover:bg-blue-800 px-3 py-1.5 rounded-lg font-medium transition">
-                <i class="fa-solid fa-download"></i> Copia de Seguridad
-            </button>
+            <div class="flex items-center gap-2">
+                <button onclick="exportarDatos()" class="text-xs bg-blue-700 hover:bg-blue-800 px-3 py-1.5 rounded-lg font-medium transition">
+                    <i class="fa-solid fa-download"></i> Copia
+                </button>
+                <button onclick="cerrarSesion()" title="Cerrar Sesión" class="text-xs bg-blue-700 hover:bg-blue-800 px-2.5 py-1.5 rounded-lg font-medium transition">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -55,7 +80,7 @@
 
             <!-- Lista de Piezas -->
             <div id="lista-inventario" class="space-y-3">
-                <!-- Se inyecta por JS -->
+                <div class="text-center py-8 text-slate-400 text-sm">Cargando inventario...</div>
             </div>
         </section>
 
@@ -92,7 +117,7 @@
             
             <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 rounded-2xl shadow-md space-y-3">
                 <p class="text-xs uppercase tracking-wider opacity-80">Valor Total del Inventario</p>
-                <p id="val-inventario-total" class="text-3xl font-ext5ibold">$0.00</p>
+                <p id="val-inventario-total" class="text-3xl font-extrabold">$0.00</p>
                 <div class="pt-2 border-t border-blue-500/30 flex justify-between text-xs">
                     <span>Piezas en Stock: <strong id="val-total-piezas">0</strong></span>
                     <span>Piezas en Taller: <strong id="val-total-taller">0</strong></span>
@@ -192,25 +217,84 @@
         </div>
     </div>
 
-    <!-- Script principal de la aplicación -->
+    <!-- Firebase SDK (Compatible) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Script Principal de la Aplicación -->
     <script>
-        let inventario = JSON.parse(localStorage.getItem('inventario_piezas')) || [
-            { id: 1, nombre: 'Soporte Frontal', cantidad: 12, precio: 15.50, categoria: 'General' },
-            { id: 2, nombre: 'Tapa Trasera', cantidad: 0, precio: 22.00, categoria: 'General' }
-        ];
+        // Configuración oficial de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAL-unKsFkwOw9_-uNo3TBa-eOkLXXlr-Q",
+            authDomain: "gato-negr0-inventario.firebaseapp.com",
+            projectId: "gato-negr0-inventario",
+            storageBucket: "gato-negr0-inventario.firebasestorage.app",
+            messagingSenderId: "960767649336",
+            appId: "1:960767649336:web:9e7cc599bb519fc8bc28cd"
+        };
 
-        let pinturaTaller = JSON.parse(localStorage.getItem('inventario_pintura')) || [
-            { id: 101, piezaId: 2, nombre: 'Tapa Trasera', cantidad: 5, taller: 'Taller Central', fechaEnvio: '2026-06-01', fechaEstimada: '2026-06-15', estado: 'En Taller' }
-        ];
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
+        // LISTA BLANCA DE CORREOS AUTORIZADOS
+        const CORREOS_AUTORIZADOS = ["gatonegroinventario@gmail.com"];
+
+        let inventario = [];
+        let pinturaTaller = [];
         let filtroActual = 'todos';
 
-        function persistir() {
-            localStorage.setItem('inventario_piezas', JSON.stringify(inventario));
-            localStorage.setItem('inventario_pintura', JSON.stringify(pinturaTaller));
-            renderizarTodo();
+        // AUTENTICACIÓN
+        function iniciarSesionConGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(error => {
+                mostrarErrorLogin("Error de inicio de sesión: " + error.message);
+            });
         }
 
+        function cerrarSesion() {
+            auth.signOut();
+        }
+
+        function mostrarErrorLogin(mensaje) {
+            const errDiv = document.getElementById('login-error');
+            errDiv.innerText = mensaje;
+            errDiv.classList.remove('hidden');
+        }
+
+        auth.onAuthStateChanged(user => {
+            const overlay = document.getElementById('login-overlay');
+            if (user) {
+                const correoUsuario = user.email.toLowerCase();
+                if (CORREOS_AUTORIZADOS.includes(correoUsuario)) {
+                    overlay.classList.add('hidden');
+                    document.getElementById('login-error').classList.add('hidden');
+                    escucharDatosEnTiempoReal();
+                } else {
+                    mostrarErrorLogin(`Acceso denegado. El correo ${user.email} no está autorizado.`);
+                    auth.signOut();
+                }
+            } else {
+                overlay.classList.remove('hidden');
+            }
+        });
+
+        // ESCUCHAR FIRESTORE EN TIEMPO REAL
+        function escucharDatosEnTiempoReal() {
+            db.collection("inventario").onSnapshot(snapshot => {
+                inventario = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarTodo();
+            });
+
+            db.collection("pintura").onSnapshot(snapshot => {
+                pinturaTaller = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarTodo();
+            });
+        }
+
+        // CONTROL DE PESTAÑAS Y NAVEGACIÓN
         function cambiarTab(tab) {
             ['inventario', 'pintura', 'cuentas'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -228,13 +312,14 @@
             renderizarCuentas();
         }
 
+        // SECCIÓN INVENTARIO
         function renderizarInventario() {
             const buscador = document.getElementById('buscarPieza').value.toLowerCase();
             const contenedor = document.getElementById('lista-inventario');
             contenedor.innerHTML = '';
 
             const filtradas = inventario.filter(p => {
-                const coincideTexto = p.nombre.toLowerCase().includes(buscador) || p.categoria.toLowerCase().includes(buscador);
+                const coincideTexto = (p.nombre || '').toLowerCase().includes(buscador) || (p.categoria || '').toLowerCase().includes(buscador);
                 const estado = p.cantidad > 0 ? 'Disponible' : 'Agotado';
                 const coincideEstado = filtroActual === 'todos' || estado === filtroActual;
                 return coincideTexto && coincideEstado;
@@ -257,12 +342,12 @@
                                 <h3 class="font-bold text-slate-800">${p.nombre}</h3>
                                 <span class="text-[10px] px-2 py-0.5 rounded-full border ${badgeColor} font-semibold">${estadoTexto}</span>
                             </div>
-                            <p class="text-xs text-slate-500">Cat: ${p.categoria || 'General'} | Precio: $${Number(p.precio).toFixed(2)}</p>
+                            <p class="text-xs text-slate-500">Cat: ${p.categoria || 'General'} | Precio: $${Number(p.precio || 0).toFixed(2)}</p>
                             <p class="text-xs font-semibold text-slate-700">Stock: ${p.cantidad} unidades</p>
                         </div>
                         <div class="flex items-center gap-1">
-                            <button onclick="editarPieza(${p.id})" class="p-2 text-slate-400 hover:text-blue-600 transition"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="eliminarPieza(${p.id})" class="p-2 text-slate-400 hover:text-rose-600 transition"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editarPieza('${p.id}')" class="p-2 text-slate-400 hover:text-blue-600 transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="eliminarPieza('${p.id}')" class="p-2 text-slate-400 hover:text-rose-600 transition"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -290,6 +375,7 @@
             document.getElementById('modal-pieza').classList.remove('hidden');
             if (id) {
                 const p = inventario.find(item => item.id === id);
+                if (!p) return;
                 document.getElementById('modal-pieza-titulo').innerText = 'Editar Pieza';
                 document.getElementById('pieza-id').value = p.id;
                 document.getElementById('pieza-nombre').value = p.nombre;
@@ -310,7 +396,7 @@
             document.getElementById('modal-pieza').classList.add('hidden');
         }
 
-        function guardarPieza() {
+        async function guardarPieza() {
             const id = document.getElementById('pieza-id').value;
             const nombre = document.getElementById('pieza-nombre').value.trim();
             const cantidad = parseInt(document.getElementById('pieza-cantidad').value) || 0;
@@ -322,31 +408,28 @@
                 return;
             }
 
+            const datosPieza = { nombre, cantidad, precio, categoria, fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp() };
+
             if (id) {
-                const p = inventario.find(item => item.id == id);
-                p.nombre = nombre;
-                p.cantidad = cantidad;
-                p.precio = precio;
-                p.categoria = categoria;
+                await db.collection('inventario').doc(id).update(datosPieza);
             } else {
-                inventario.push({ id: Date.now(), nombre, cantidad, precio, categoria });
+                await db.collection('inventario').add(datosPieza);
             }
 
             cerrarModalPieza();
-            persistir();
         }
 
         function editarPieza(id) {
             abrirModalPieza(id);
         }
 
-        function eliminarPieza(id) {
+        async function eliminarPieza(id) {
             if (confirm('¿Estás seguro de eliminar esta pieza?')) {
-                inventario = inventario.filter(p => p.id !== id);
-                persistir();
+                await db.collection('inventario').doc(id).delete();
             }
         }
 
+        // SECCIÓN PINTURA
         function renderizarPintura() {
             const contenedor = document.getElementById('lista-pintura');
             contenedor.innerHTML = '';
@@ -378,7 +461,7 @@
                             </div>
                             ${item.estado === 'En Taller' ? `
                                 <div class="pt-2 flex justify-end">
-                                    <button onclick="retornarPintura(${item.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                                    <button onclick="retornarPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
                                         <i class="fa-solid fa-check"></i> Recibir del Taller
                                     </button>
                                 </div>
@@ -405,8 +488,8 @@
             document.getElementById('modal-pintura').classList.add('hidden');
         }
 
-        function guardarEnvioPintura() {
-            const piezaId = parseInt(document.getElementById('pintura-select-pieza').value);
+        async function guardarEnvioPintura() {
+            const piezaId = document.getElementById('pintura-select-pieza').value;
             const cantidad = parseInt(document.getElementById('pintura-cantidad').value) || 0;
             const taller = document.getElementById('pintura-taller').value.trim() || 'Taller General';
             const fechaEstimada = document.getElementById('pintura-fecha').value;
@@ -424,10 +507,13 @@
                 return;
             }
 
-            piezaObj.cantidad -= cantidad;
+            // Descontar inventario en Firestore
+            await db.collection('inventario').doc(piezaId).update({
+                cantidad: piezaObj.cantidad - cantidad
+            });
 
-            pinturaTaller.unshift({
-                id: Date.now(),
+            // Agregar a pintura
+            await db.collection('pintura').add({
                 piezaId: piezaObj.id,
                 nombre: piezaObj.nombre,
                 cantidad,
@@ -438,45 +524,46 @@
             });
 
             cerrarModalPintura();
-            persistir();
         }
 
-        function retornarPintura(id) {
+        async function retornarPintura(id) {
             const item = pinturaTaller.find(p => p.id === id);
             if (!item) return;
-
-            item.estado = 'Completado';
 
             if (confirm(`¿Deseas sumar estas ${item.cantidad} unidades de "${item.nombre}" de vuelta al inventario general?`)) {
                 const piezaObj = inventario.find(p => p.id === item.piezaId);
                 if (piezaObj) {
-                    piezaObj.cantidad += item.cantidad;
+                    await db.collection('inventario').doc(item.piezaId).update({
+                        cantidad: piezaObj.cantidad + item.cantidad
+                    });
                 } else {
-                    inventario.push({
-                        id: item.piezaId,
+                    await db.collection('inventario').add({
                         nombre: item.nombre,
                         cantidad: item.cantidad,
                         precio: 0.00,
                         categoria: 'General'
                     });
                 }
-            }
 
-            persistir();
+                await db.collection('pintura').doc(id).update({
+                    estado: 'Completado'
+                });
+            }
         }
 
+        // SECCIÓN CUENTAS
         function renderizarCuentas() {
             let valorTotal = 0;
             let totalPiezasStock = 0;
 
             inventario.forEach(p => {
-                valorTotal += (p.cantidad * p.precio);
-                totalPiezasStock += p.cantidad;
+                valorTotal += ((p.cantidad || 0) * (p.precio || 0));
+                totalPiezasStock += (p.cantidad || 0);
             });
 
             let totalPiezasTaller = 0;
             pinturaTaller.filter(p => p.estado === 'En Taller').forEach(p => {
-                totalPiezasTaller += p.cantidad;
+                totalPiezasTaller += (p.cantidad || 0);
             });
 
             document.getElementById('val-inventario-total').innerText = `$${valorTotal.toFixed(2)}`;
@@ -512,59 +599,10 @@
             a.click();
         }
 
-        renderizarTodo();
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
     </script>
-    <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-</script>
-<!-- 1. Cargamos el núcleo, autenticación y base de datos de Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-<script>
-  // 2. Tu configuración oficial de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyAL-unKsFkwOw9_-uNo3TBa-eOkLXXlr-Q",
-    authDomain: "gato-negr0-inventario.firebaseapp.com",
-    projectId: "gato-negr0-inventario",
-    storageBucket: "gato-negr0-inventario.firebasestorage.app",
-    messagingSenderId: "960767649336",
-    appId: "1:960767649336:web:9e7cc599bb519fc8bc28cd"
-  };
-
-  // 3. Inicializar Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  // 4. Función para Iniciar Sesión con Google
-  function iniciarSesionConGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then((result) => {
-        console.log("Usuario autenticado:", result.user.email);
-      })
-      .catch((error) => {
-        console.error("Error al iniciar sesión:", error.message);
-        alert("Error al iniciar sesión: " + error.message);
-      });
-  }
-
-  // 5. Escuchar cambios de estado de sesión
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      console.log("Sesión activa para:", user.email);
-      // Aquí mostraremos el inventario cuando el usuario haya ingresado
-    } else {
-      console.log("No hay usuario autenticado.");
-      // Aquí mostraremos la pantalla de inicio de sesión
-    }
-  });
-</script>
-
 </body>
 </html>
-
