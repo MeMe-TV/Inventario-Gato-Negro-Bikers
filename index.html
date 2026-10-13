@@ -98,6 +98,7 @@
                 <div class="flex gap-2 overflow-x-auto pb-1 text-xs pt-1">
                     <button onclick="filtrarEstado('todos')" id="filtro-todos" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium whitespace-nowrap">Todas</button>
                     <button onclick="filtrarEstado('Disponible')" id="filtro-Disponible" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap">Disponibles</button>
+                    <button onclick="filtrarEstado('Critico')" id="filtro-Critico" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 font-medium whitespace-nowrap"><i class="fa-solid fa-triangle-exclamation"></i> Poco Stock</button>
                     <button onclick="filtrarEstado('Agotado')" id="filtro-Agotado" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap">Agotadas</button>
                 </div>
             </div>
@@ -159,9 +160,9 @@
             </div>
         </section>
 
-        <!-- PESTAÑA 3: CUENTAS / FINANZAS -->
+        <!-- PESTAÑA 3: CUENTAS Y VENTAS / FINANZAS -->
         <section id="tab-cuentas" class="hidden space-y-4">
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Cuentas y Finanzas</h2>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Cuentas y Ventas</h2>
             
             <div class="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-slate-800 dark:to-slate-900 border border-blue-500/20 text-white p-5 rounded-2xl shadow-md space-y-3">
                 <p class="text-xs uppercase tracking-wider opacity-80">Valor Total del Inventario</p>
@@ -169,6 +170,34 @@
                 <div class="pt-2 border-t border-blue-500/30 flex justify-between text-xs">
                     <span>Piezas en Stock: <strong id="val-total-piezas">0</strong></span>
                     <span>En Fabricación: <strong id="val-total-procesos">0</strong></span>
+                </div>
+            </div>
+
+            <!-- MÓDULO DE VENTAS Y MÉTRICAS -->
+            <div class="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 p-4 rounded-2xl shadow-sm space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-emerald-900 dark:text-emerald-300 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-emerald-600 dark:text-emerald-400"></i> Resumen de Ventas
+                    </h3>
+                    <button onclick="reiniciarVentas()" class="text-[10px] text-emerald-700 dark:text-emerald-400 underline font-semibold">Reiniciar Ventas</button>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-medium">Ingresos por Ventas</p>
+                        <p id="val-ventas-totales" class="text-xl font-bold text-emerald-700 dark:text-emerald-400">$0.00</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-medium">Unidades Vendidas</p>
+                        <p id="val-piezas-vendidas" class="text-xl font-bold text-emerald-700 dark:text-emerald-400">0</p>
+                    </div>
+                </div>
+
+                <!-- Historial Reciente de Ventas -->
+                <div class="pt-2 space-y-2">
+                    <p class="text-xs font-bold text-emerald-900 dark:text-emerald-300">Historial Reciente de Ventas:</p>
+                    <div id="lista-historial-ventas" class="space-y-1.5 max-h-40 overflow-y-auto text-xs">
+                        <p class="text-slate-400 text-center py-2">No hay ventas registradas aún.</p>
+                    </div>
                 </div>
             </div>
 
@@ -213,6 +242,31 @@
             </button>
         </div>
     </nav>
+
+    <!-- MODAL REGISTRAR VENTA -->
+    <div id="modal-vender" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl border border-slate-100 dark:border-slate-700">
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-cart-shopping text-emerald-600 dark:text-emerald-400"></i> Registrar Venta
+            </h3>
+            <input type="hidden" id="vender-pieza-id">
+            <div class="space-y-3 text-sm">
+                <p id="vender-pieza-info" class="text-xs text-slate-600 dark:text-slate-300 font-semibold"></p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Cantidad a Vender</label>
+                    <input type="number" id="vender-cantidad" min="1" value="1" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Precio Cobrado ($ c/u)</label>
+                    <input type="number" step="0.01" id="vender-precio" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="cerrarModalVender()" class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
+                <button onclick="confirmarVenta()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Confirmar Venta</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL COTIZADOR PARA CLIENTES -->
     <div id="modal-cotizador" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
@@ -300,7 +354,7 @@
         </div>
     </div>
 
-    <!-- MODAL NUEVA/EDITAR PIEZA -->
+    <!-- MODAL NUEVA/EDITAR PIEZA (CON STOCK MÍNIMO) -->
     <div id="modal-pieza" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl border border-slate-100 dark:border-slate-700">
             <h3 id="modal-pieza-titulo" class="font-bold text-lg text-slate-900 dark:text-white">Nueva Pieza / Accesorio</h3>
@@ -323,6 +377,10 @@
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Precio Unitario ($)</label>
                         <input type="number" step="0.01" id="pieza-precio" min="0" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00">
                     </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Stock Mínimo (Alerta de Reorden)</label>
+                    <input type="number" id="pieza-minimo" min="0" value="2" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="2">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
@@ -425,6 +483,7 @@
         let inventario = [];
         let doblezTaller = [];
         let pinturaTaller = [];
+        let ventasHistorial = [];
         let filtroActual = 'todos';
         let modeloFiltroActual = 'todos';
         let piezasCotizacion = [];
@@ -506,6 +565,11 @@
 
             db.collection("pintura").onSnapshot(snapshot => {
                 pinturaTaller = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarTodo();
+            });
+
+            db.collection("ventas").onSnapshot(snapshot => {
+                ventasHistorial = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarTodo();
             });
         }
@@ -659,7 +723,7 @@
             renderizarInventario();
         }
 
-        // RENDERIZAR INVENTARIO AGRUPADO
+        // RENDERIZAR INVENTARIO AGRUPADO (CON ALERTAS DE STOCK MÍNIMO Y REGISTRO DE VENTAS)
         function renderizarInventario() {
             const buscador = document.getElementById('buscarPieza').value.toLowerCase();
             const contenedor = document.getElementById('lista-inventario');
@@ -668,8 +732,17 @@
             const filtradas = inventario.filter(p => {
                 const texto = `${p.nombre || ''} ${p.modelo || ''}`.toLowerCase();
                 const coincideTexto = texto.includes(buscador);
-                const estado = p.cantidad > 0 ? 'Disponible' : 'Agotado';
-                const coincideEstado = filtroActual === 'todos' || estado === filtroActual;
+                const min = p.minimo !== undefined ? p.minimo : 2;
+                
+                let estado = 'Disponible';
+                if (p.cantidad <= 0) estado = 'Agotado';
+                else if (p.cantidad <= min) estado = 'Critico';
+
+                let coincideEstado = true;
+                if (filtroActual === 'Disponible') coincideEstado = p.cantidad > min;
+                else if (filtroActual === 'Critico') coincideEstado = p.cantidad > 0 && p.cantidad <= min;
+                else if (filtroActual === 'Agotado') coincideEstado = p.cantidad <= 0;
+
                 const coincideModelo = modeloFiltroActual === 'todos' || (p.modelo || 'General').toLowerCase() === modeloFiltroActual.toLowerCase();
                 return coincideTexto && coincideEstado && coincideModelo;
             });
@@ -691,9 +764,20 @@
                 let piezasHTML = '';
 
                 piezas.forEach(p => {
+                    const min = p.minimo !== undefined ? p.minimo : 2;
                     const enStock = p.cantidad > 0;
-                    const badgeColor = enStock ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' : 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800';
-                    const estadoTexto = enStock ? 'Disponible' : 'Agotado';
+                    const esCritico = p.cantidad > 0 && p.cantidad <= min;
+                    
+                    let badgeColor = 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800';
+                    let estadoTexto = 'Disponible';
+
+                    if (!enStock) {
+                        badgeColor = 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800';
+                        estadoTexto = 'Agotado';
+                    } else if (esCritico) {
+                        badgeColor = 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+                        estadoTexto = '⚠️ Poco Stock';
+                    }
 
                     piezasHTML += `
                         <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex justify-between items-center">
@@ -715,6 +799,13 @@
                                             <i class="fa-solid fa-plus"></i>
                                         </button>
                                     </div>
+
+                                    <!-- BOTÓN DE VENTA RÁPIDA -->
+                                    ${p.cantidad > 0 ? `
+                                    <button onclick="abrirModalVender('${p.id}')" class="ml-1 px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold transition flex items-center gap-1 shadow-sm">
+                                        <i class="fa-solid fa-cart-shopping"></i> Vender
+                                    </button>
+                                    ` : ''}
                                 </div>
                             </div>
                             <div class="flex items-center gap-1">
@@ -741,6 +832,70 @@
             });
         }
 
+        // MÓDULO REGISTRO Y PROCESAMIENTO DE VENTAS
+        function abrirModalVender(id) {
+            const pieza = inventario.find(p => p.id === id);
+            if (!pieza) return;
+
+            document.getElementById('vender-pieza-id').value = id;
+            document.getElementById('vender-pieza-info').innerText = `Vendiendo: [${pieza.modelo || 'GR 250'}] ${pieza.nombre} (Stock actual: ${pieza.cantidad})`;
+            document.getElementById('vender-cantidad').value = 1;
+            document.getElementById('vender-precio').value = pieza.precio || 0;
+
+            document.getElementById('modal-vender').classList.remove('hidden');
+        }
+
+        function cerrarModalVender() {
+            document.getElementById('modal-vender').classList.add('hidden');
+        }
+
+        async function confirmarVenta() {
+            const id = document.getElementById('vender-pieza-id').value;
+            const cantVenta = parseInt(document.getElementById('vender-cantidad').value) || 0;
+            const precioVenta = parseFloat(document.getElementById('vender-precio').value) || 0;
+
+            const pieza = inventario.find(p => p.id === id);
+            if (!pieza || cantVenta <= 0) return;
+
+            if (cantVenta > pieza.cantidad) {
+                alert('No tienes suficiente stock para realizar esta venta.');
+                return;
+            }
+
+            const ahora = new Date();
+            const totalUSD = cantVenta * precioVenta;
+
+            // 1. Descontar stock del inventario
+            await db.collection('inventario').doc(id).update({
+                cantidad: pieza.cantidad - cantVenta
+            });
+
+            // 2. Guardar registro en colección 'ventas'
+            await db.collection('ventas').add({
+                modelo: pieza.modelo || 'GR 250',
+                nombre: pieza.nombre,
+                cantidad: cantVenta,
+                precioUnitario: precioVenta,
+                totalUSD: totalUSD,
+                fecha: ahora.toISOString().split('T')[0],
+                hora: ahora.toTimeString().split(' ')[0].substring(0, 5),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            cerrarModalVender();
+        }
+
+        async function reiniciarVentas() {
+            if (confirm('¿Deseas reiniciar el historial e ingresos de ventas a $0.00?')) {
+                const batch = db.batch();
+                ventasHistorial.forEach(item => {
+                    const ref = db.collection('ventas').doc(item.id);
+                    batch.delete(ref);
+                });
+                await batch.commit();
+            }
+        }
+
         async function cambiarCantidadRapida(id, cambio) {
             const pieza = inventario.find(p => p.id === id);
             if (!pieza) return;
@@ -756,12 +911,14 @@
 
         function filtrarEstado(estado) {
             filtroActual = estado;
-            ['todos', 'Disponible', 'Agotado'].forEach(e => {
+            ['todos', 'Disponible', 'Critico', 'Agotado'].forEach(e => {
                 const btn = document.getElementById(`filtro-${e}`);
-                if (e === estado) {
-                    btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium whitespace-nowrap";
-                } else {
-                    btn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap";
+                if (btn) {
+                    if (e === estado) {
+                        btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium whitespace-nowrap";
+                    } else {
+                        btn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap";
+                    }
                 }
             });
             renderizarInventario();
@@ -782,6 +939,7 @@
                 document.getElementById('pieza-nombre').value = p.nombre;
                 document.getElementById('pieza-cantidad').value = p.cantidad;
                 document.getElementById('pieza-precio').value = p.precio;
+                document.getElementById('pieza-minimo').value = p.minimo !== undefined ? p.minimo : 2;
             } else {
                 document.getElementById('modal-pieza-titulo').innerText = 'Nuevo Accesorio';
                 document.getElementById('pieza-id').value = '';
@@ -789,6 +947,7 @@
                 document.getElementById('pieza-nombre').value = '';
                 document.getElementById('pieza-cantidad').value = '';
                 document.getElementById('pieza-precio').value = '';
+                document.getElementById('pieza-minimo').value = 2;
             }
         }
 
@@ -802,13 +961,14 @@
             const nombre = document.getElementById('pieza-nombre').value.trim();
             const cantidad = parseInt(document.getElementById('pieza-cantidad').value) || 0;
             const precio = parseFloat(document.getElementById('pieza-precio').value) || 0;
+            const minimo = parseInt(document.getElementById('pieza-minimo').value) || 2;
 
             if (!nombre) {
                 alert('Por favor ingresa el nombre del accesorio.');
                 return;
             }
 
-            const datosPieza = { modelo, nombre, cantidad, precio, fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp() };
+            const datosPieza = { modelo, nombre, cantidad, precio, minimo, fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp() };
 
             if (id) {
                 await db.collection('inventario').doc(id).update(datosPieza);
@@ -1087,6 +1247,7 @@
                     nombre: item.nombre,
                     cantidad: item.cantidad,
                     precio: 0.00,
+                    minimo: 2,
                     fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
@@ -1100,14 +1261,18 @@
             cerrarModalRecepcionPintura();
         }
 
-        // SECCIÓN CUENTAS
+        // SECCIÓN CUENTAS Y ESTADÍSTICAS DE VENTAS
         function renderizarCuentas() {
             let valorTotal = 0;
             let totalPiezasStock = 0;
+            let piezasCriticasCount = 0;
 
             inventario.forEach(p => {
-                valorTotal += ((p.cantidad || 0) * (p.precio || 0));
-                totalPiezasStock += (p.cantidad || 0);
+                const cant = p.cantidad || 0;
+                const min = p.minimo !== undefined ? p.minimo : 2;
+                valorTotal += (cant * (p.precio || 0));
+                totalPiezasStock += cant;
+                if (cant > 0 && cant <= min) piezasCriticasCount++;
             });
 
             let totalPiezasProcesos = 0;
@@ -1123,10 +1288,40 @@
                 deudaDoblezTotal += ((p.cantidad || 0) * (p.costo || 0));
             });
 
+            // Métricas de ventas
+            let totalVentasUSD = 0;
+            let totalUnidadesVendidas = 0;
+            ventasHistorial.forEach(v => {
+                totalVentasUSD += (v.totalUSD || 0);
+                totalUnidadesVendidas += (v.cantidad || 0);
+            });
+
             document.getElementById('val-inventario-total').innerText = `$${valorTotal.toFixed(2)}`;
             document.getElementById('val-total-piezas').innerText = totalPiezasStock;
             document.getElementById('val-total-procesos').innerText = totalPiezasProcesos;
             document.getElementById('val-deuda-doblez').innerText = `$${deudaDoblezTotal.toFixed(2)}`;
+            document.getElementById('val-ventas-totales').innerText = `$${totalVentasUSD.toFixed(2)}`;
+            document.getElementById('val-piezas-vendidas').innerText = totalUnidadesVendidas;
+
+            // Renderizar Historial Reciente de Ventas
+            const contHist = document.getElementById('lista-historial-ventas');
+            contHist.innerHTML = '';
+            if (ventasHistorial.length === 0) {
+                contHist.innerHTML = '<p class="text-slate-400 text-center py-2">No hay ventas registradas aún.</p>';
+            } else {
+                const ordenadas = [...ventasHistorial].sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                ordenadas.slice(0, 8).forEach(v => {
+                    contHist.innerHTML += `
+                        <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <div>
+                                <span class="font-bold text-slate-800 dark:text-slate-200">[${v.modelo}] ${v.nombre}</span>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400 block">${v.cantidad} unidad(es) - ${v.fecha || 'N/D'} ${v.hora || ''}</span>
+                            </div>
+                            <strong class="text-emerald-600 dark:text-emerald-400 font-extrabold">+$${Number(v.totalUSD || 0).toFixed(2)}</strong>
+                        </div>
+                    `;
+                });
+            }
 
             const disponibles = inventario.filter(p => p.cantidad > 0).length;
             const agotadas = inventario.filter(p => p.cantidad === 0).length;
@@ -1137,6 +1332,10 @@
                 <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700">
                     <span class="text-slate-600 dark:text-slate-400">Accesorios en stock</span>
                     <span class="font-bold text-slate-800 dark:text-white">${disponibles}</span>
+                </div>
+                <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700">
+                    <span class="text-slate-600 dark:text-slate-400">Accesorios con poco stock</span>
+                    <span class="font-bold text-amber-600 dark:text-amber-400">${piezasCriticasCount}</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700">
                     <span class="text-slate-600 dark:text-slate-400">Accesorios agotados</span>
@@ -1154,7 +1353,7 @@
         }
 
         function exportarDatos() {
-            const datos = { inventario, doblezTaller, pinturaTaller };
+            const datos = { inventario, doblezTaller, pinturaTaller, ventasHistorial };
             const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
