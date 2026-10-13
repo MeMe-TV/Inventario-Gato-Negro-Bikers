@@ -44,11 +44,14 @@
                 <img src="279696.png" alt="Logo" class="w-7 h-7 rounded-lg object-cover bg-white/10 border border-white/20">
                 <span>Gato Negro Taller</span>
             </h1>
-            <div class="flex items-center gap-2">
-                <button onclick="exportarDatos()" class="text-xs bg-blue-700 hover:bg-blue-800 px-3 py-1.5 rounded-lg font-medium transition">
-                    <i class="fa-solid fa-download"></i> Copia
+            <div class="flex items-center gap-1.5">
+                <button onclick="abrirModalCotizador()" class="text-xs bg-emerald-500 hover:bg-emerald-600 px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-calculator"></i> Cotizar
                 </button>
-                <button onclick="cerrarSesion()" title="Cerrar Sesión" class="text-xs bg-blue-700 hover:bg-blue-800 px-2.5 py-1.5 rounded-lg font-medium transition">
+                <button onclick="exportarDatos()" class="text-xs bg-blue-700 hover:bg-blue-800 px-2.5 py-1.5 rounded-lg font-medium transition">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+                <button onclick="cerrarSesion()" title="Cerrar Sesión" class="text-xs bg-blue-700 hover:bg-blue-800 px-2 py-1.5 rounded-lg font-medium transition">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
@@ -86,30 +89,51 @@
             </div>
         </section>
 
-        <!-- PESTAÑA 2: PINTURA / TALLER -->
+        <!-- PESTAÑA 2: TALLER Y PROCESOS (DOBLEZ Y PINTURA) -->
         <section id="tab-pintura" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-900">Pintura y Taller</h2>
-                <button onclick="abrirModalPintura()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-xl text-sm font-semibold shadow-sm transition flex items-center gap-1">
-                    <i class="fa-solid fa-paintbrush"></i> Enviar a Pintura
-                </button>
+                <h2 class="text-xl font-bold text-slate-900">Taller y Procesos</h2>
+                <div class="flex gap-1.5">
+                    <button onclick="abrirModalDoblez()" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-2 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
+                        <i class="fa-solid fa-angles-right"></i> Enviar a Doblez
+                    </button>
+                    <button onclick="abrirModalPintura()" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-2 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
+                        <i class="fa-solid fa-paintbrush"></i> A Pintura
+                    </button>
+                </div>
             </div>
 
             <!-- Tarjetas de Resumen Taller -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-purple-50 border border-purple-100 p-3 rounded-2xl">
-                    <p class="text-xs text-purple-600 font-medium">En Taller</p>
-                    <p id="stat-en-pintura" class="text-xl font-bold text-purple-900">0</p>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-amber-50 border border-amber-100 p-2.5 rounded-2xl">
+                    <p class="text-[10px] text-amber-600 font-medium uppercase">En Doblez</p>
+                    <p id="stat-en-doblez" class="text-lg font-bold text-amber-900">0</p>
                 </div>
-                <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-2xl">
-                    <p class="text-xs text-emerald-600 font-medium">Completadas</p>
-                    <p id="stat-retornadas" class="text-xl font-bold text-emerald-900">0</p>
+                <div class="bg-purple-50 border border-purple-100 p-2.5 rounded-2xl">
+                    <p class="text-[10px] text-purple-600 font-medium uppercase">En Pintura</p>
+                    <p id="stat-en-pintura" class="text-lg font-bold text-purple-900">0</p>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-2xl">
+                    <p class="text-[10px] text-emerald-600 font-medium uppercase">Listas</p>
+                    <p id="stat-retornadas" class="text-lg font-bold text-emerald-900">0</p>
                 </div>
             </div>
 
-            <!-- Lista de Taller -->
-            <div id="lista-pintura" class="space-y-3">
-                <!-- Se inyecta por JS -->
+            <!-- Contenedor de Listas del Taller -->
+            <div class="space-y-4 pt-1">
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-2 px-1"><i class="fa-solid fa-wave-square"></i> Piezas en Proceso de Doblez</h3>
+                    <div id="lista-doblez" class="space-y-3">
+                        <!-- Inyectado por JS -->
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-purple-700 mb-2 px-1"><i class="fa-solid fa-palette"></i> Piezas en Proceso de Pintura</h3>
+                    <div id="lista-pintura" class="space-y-3">
+                        <!-- Inyectado por JS -->
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -122,8 +146,20 @@
                 <p id="val-inventario-total" class="text-3xl font-extrabold">$0.00</p>
                 <div class="pt-2 border-t border-blue-500/30 flex justify-between text-xs">
                     <span>Piezas en Stock: <strong id="val-total-piezas">0</strong></span>
-                    <span>Piezas en Taller: <strong id="val-total-taller">0</strong></span>
+                    <span>En Procesos: <strong id="val-total-procesos">0</strong></span>
                 </div>
+            </div>
+
+            <!-- Tarjeta de Deuda con Doblador -->
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl shadow-sm space-y-2">
+                <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice-dollar text-amber-600"></i> Cuenta del Doblador
+                </h3>
+                <div class="flex justify-between items-center text-sm pt-1">
+                    <span class="text-amber-700">Deuda total por dobleces:</span>
+                    <strong id="val-deuda-doblez" class="text-lg font-extrabold text-amber-900">$0.00</strong>
+                </div>
+                <p class="text-[11px] text-amber-600">Calculado a partir de las piezas enviadas a doblar.</p>
             </div>
 
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
@@ -147,7 +183,7 @@
             </button>
             <button onclick="cambiarTab('pintura')" id="nav-pintura" class="flex flex-col items-center justify-center text-slate-400 font-medium text-xs gap-1">
                 <i class="fa-solid fa-paintbrush text-lg"></i>
-                Pintura
+                Taller
             </button>
             <button onclick="cambiarTab('cuentas')" id="nav-cuentas" class="flex flex-col items-center justify-center text-slate-400 font-medium text-xs gap-1">
                 <i class="fa-solid fa-wallet text-lg"></i>
@@ -155,6 +191,67 @@
             </button>
         </div>
     </nav>
+
+    <!-- MODAL COTIZADOR / CALCULADORA PARA CLIENTES -->
+    <div id="modal-cotizador" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-emerald-600"></i> Cotizar Cliente
+                </h3>
+                <button onclick="cerrarModalCotizador()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- Tasas de Cambio -->
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2 text-xs">
+                <div class="flex justify-between items-center">
+                    <span class="font-semibold text-slate-700">Tasa BCV (Bs/$):</span>
+                    <div class="flex items-center gap-1">
+                        <input type="number" id="tasa-bcv" step="0.01" oninput="calcularCotizacion()" class="w-20 px-2 py-1 border border-slate-300 rounded text-right font-bold text-emerald-700 bg-white" placeholder="0.00">
+                        <button onclick="obtenerTasaBCV()" class="p-1 text-blue-600 hover:text-blue-800" title="Actualizar BCV en vivo"><i class="fa-solid fa-rotate"></i></button>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="font-semibold text-slate-700">Tasa USDT (Bs/USDT):</span>
+                    <input type="number" id="tasa-usdt" step="0.01" oninput="calcularCotizacion()" class="w-20 px-2 py-1 border border-slate-300 rounded text-right font-bold text-purple-700 bg-white" placeholder="0.00">
+                </div>
+            </div>
+
+            <!-- Selección de Piezas -->
+            <div class="space-y-2">
+                <label class="block text-xs font-semibold text-slate-600">Seleccionar Piezas</label>
+                <div class="flex gap-2">
+                    <select id="cotizador-select-pieza" class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white">
+                        <!-- Dinámico -->
+                    </select>
+                    <button onclick="agregarPiezaCotizacion()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 transition">+</button>
+                </div>
+            </div>
+
+            <!-- Lista de Piezas en la Cotización -->
+            <div id="cotizador-lista" class="space-y-1.5 text-xs border-y py-2 max-h-36 overflow-y-auto">
+                <p class="text-slate-400 text-center py-2">Ninguna pieza seleccionada</p>
+            </div>
+
+            <!-- Resumen Total -->
+            <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-1.5 text-xs">
+                <div class="flex justify-between font-bold text-slate-800">
+                    <span>Total USD ($):</span>
+                    <span id="cotizacion-total-usd">$0.00</span>
+                </div>
+                <div class="flex justify-between font-bold text-emerald-700 text-sm">
+                    <span>Total Bolívares (BCV):</span>
+                    <span id="cotizacion-total-ves">Bs. 0.00</span>
+                </div>
+                <div class="flex justify-between font-bold text-purple-700">
+                    <span>Total USDT:</span>
+                    <span id="cotizacion-total-usdt">0.00 USDT</span>
+                </div>
+            </div>
+
+            <button onclick="cerrarModalCotizador()" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-semibold text-xs hover:bg-slate-800 transition">Cerrar Cotizador</button>
+        </div>
+    </div>
 
     <!-- MODAL NUEVA/EDITAR PIEZA -->
     <div id="modal-pieza" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
@@ -184,6 +281,37 @@
             <div class="flex gap-2 pt-2">
                 <button onclick="cerrarModalPieza()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
                 <button onclick="guardarPieza()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ENVIAR A DOBLEZ -->
+    <div id="modal-doblez" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
+            <h3 class="font-bold text-lg text-slate-900">Enviar Piezas a Doblez</h3>
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Seleccionar Pieza del Inventario</label>
+                    <select id="doblez-select-pieza" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
+                        <!-- Rellenado por JS -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad a Enviar</label>
+                    <input type="number" id="doblez-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="1">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Doblador / Taller</label>
+                    <input type="text" id="doblez-taller" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Taller de Dobles Don Pedro">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Costo por Doblez / Pieza ($)</label>
+                    <input type="number" step="0.01" id="doblez-costo" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="0.00">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="cerrarModalDoblez()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
+                <button onclick="guardarEnvioDoblez()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Enviar</button>
             </div>
         </div>
     </div>
@@ -245,8 +373,10 @@
         const CORREOS_AUTORIZADOS = ["gatonegroinventario@gmail.com"];
 
         let inventario = [];
+        let doblezTaller = [];
         let pinturaTaller = [];
         let filtroActual = 'todos';
+        let piezasCotizacion = [];
 
         // AUTENTICACIÓN
         function iniciarSesionConGoogle() {
@@ -274,6 +404,7 @@
                     overlay.classList.add('hidden');
                     document.getElementById('login-error').classList.add('hidden');
                     escucharDatosEnTiempoReal();
+                    obtenerTasaBCV();
                 } else {
                     mostrarErrorLogin(`Acceso denegado. El correo ${user.email} no está autorizado.`);
                     auth.signOut();
@@ -290,10 +421,113 @@
                 renderizarTodo();
             });
 
+            db.collection("doblez").onSnapshot(snapshot => {
+                doblezTaller = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarTodo();
+            });
+
             db.collection("pintura").onSnapshot(snapshot => {
                 pinturaTaller = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderizarTodo();
             });
+        }
+
+        // TASA BCV EN VIVO
+        async function obtenerTasaBCV() {
+            try {
+                const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+                const data = await res.json();
+                if (data && data.promedio) {
+                    document.getElementById('tasa-bcv').value = data.promedio.toFixed(2);
+                    if (!document.getElementById('tasa-usdt').value) {
+                        document.getElementById('tasa-usdt').value = (data.promedio * 1.05).toFixed(2); // Estimación USDT
+                    }
+                    calcularCotizacion();
+                }
+            } catch (e) {
+                console.log("No se pudo obtener la tasa BCV automáticamente.");
+            }
+        }
+
+        // CONTROL DE COTIZADOR
+        function abrirModalCotizador() {
+            const select = document.getElementById('cotizador-select-pieza');
+            select.innerHTML = '';
+            inventario.filter(p => p.cantidad > 0).forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.nombre} - $${Number(p.precio).toFixed(2)}</option>`;
+            });
+            document.getElementById('modal-cotizador').classList.remove('hidden');
+            calcularCotizacion();
+        }
+
+        function cerrarModalCotizador() {
+            document.getElementById('modal-cotizador').classList.add('hidden');
+        }
+
+        function agregarPiezaCotizacion() {
+            const id = document.getElementById('cotizador-select-pieza').value;
+            const pieza = inventario.find(p => p.id === id);
+            if (!pieza) return;
+
+            const existente = piezasCotizacion.find(p => p.id === id);
+            if (existente) {
+                existente.cant++;
+            } else {
+                piezasCotizacion.push({ id: pieza.id, nombre: pieza.nombre, precio: pieza.precio, cant: 1 });
+            }
+            renderizarListaCotizacion();
+        }
+
+        function cambiarCantCotizacion(id, cambio) {
+            const item = piezasCotizacion.find(p => p.id === id);
+            if (!item) return;
+            item.cant += cambio;
+            if (item.cant <= 0) {
+                piezasCotizacion = piezasCotizacion.filter(p => p.id !== id);
+            }
+            renderizarListaCotizacion();
+        }
+
+        function renderizarListaCotizacion() {
+            const cont = document.getElementById('cotizador-lista');
+            cont.innerHTML = '';
+            if (piezasCotizacion.length === 0) {
+                cont.innerHTML = '<p class="text-slate-400 text-center py-2">Ninguna pieza seleccionada</p>';
+            } else {
+                piezasCotizacion.forEach(p => {
+                    cont.innerHTML += `
+                        <div class="flex justify-between items-center bg-slate-100 p-2 rounded-lg">
+                            <div>
+                                <strong class="text-slate-800">${p.nombre}</strong>
+                                <span class="text-slate-500 block">$${Number(p.precio).toFixed(2)} c/u</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="cambiarCantCotizacion('${p.id}', -1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold">-</button>
+                                <span class="font-bold">${p.cant}</span>
+                                <button onclick="cambiarCantCotizacion('${p.id}', 1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            calcularCotizacion();
+        }
+
+        function calcularCotizacion() {
+            const tasaBCV = parseFloat(document.getElementById('tasa-bcv').value) || 0;
+            const tasaUSDT = parseFloat(document.getElementById('tasa-usdt').value) || 0;
+
+            let totalUSD = 0;
+            piezasCotizacion.forEach(p => {
+                totalUSD += (p.precio || 0) * p.cant;
+            });
+
+            const totalVES = totalUSD * tasaBCV;
+            const totalUSDT = tasaUSDT > 0 ? (totalVES / tasaUSDT) : totalUSD;
+
+            document.getElementById('cotizacion-total-usd').innerText = `$${totalUSD.toFixed(2)}`;
+            document.getElementById('cotizacion-total-ves').innerText = `Bs. ${totalVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('cotizacion-total-usdt').innerText = `${totalUSDT.toFixed(2)} USDT`;
         }
 
         // CONTROL DE PESTAÑAS Y NAVEGACIÓN
@@ -310,7 +544,7 @@
 
         function renderizarTodo() {
             renderizarInventario();
-            renderizarPintura();
+            renderizarTallerProcesos();
             renderizarCuentas();
         }
 
@@ -457,50 +691,155 @@
             }
         }
 
-        // SECCIÓN PINTURA
-        function renderizarPintura() {
-            const contenedor = document.getElementById('lista-pintura');
-            contenedor.innerHTML = '';
+        // SECCIÓN TALLER Y PROCESOS (DOBLEZ Y PINTURA)
+        function renderizarTallerProcesos() {
+            const contDoblez = document.getElementById('lista-doblez');
+            const contPintura = document.getElementById('lista-pintura');
+            contDoblez.innerHTML = '';
+            contPintura.innerHTML = '';
 
-            let enTallerCount = 0;
+            let enDoblezCount = 0;
+            let enPinturaCount = 0;
             let retornadasCount = 0;
 
-            if (pinturaTaller.length === 0) {
-                contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No hay registros en taller o pintura.</div>`;
+            const doblezActivo = doblezTaller.filter(i => i.estado === 'En Doblez');
+            if (doblezActivo.length === 0) {
+                contDoblez.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">No hay piezas en proceso de doblez.</div>`;
             } else {
-                pinturaTaller.forEach(item => {
-                    if (item.estado === 'En Taller') enTallerCount++;
-                    else retornadasCount++;
-
-                    const badge = item.estado === 'En Taller' ? 'bg-purple-50 text-purple-700 border-purple-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200';
-
-                    contenedor.innerHTML += `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                doblezActivo.forEach(item => {
+                    enDoblezCount += item.cantidad;
+                    contDoblez.innerHTML += `
+                        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h3 class="font-bold text-slate-800">${item.nombre}</h3>
-                                    <p class="text-xs text-slate-500">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
+                                    <h4 class="font-bold text-slate-800 text-sm">${item.nombre}</h4>
+                                    <p class="text-slate-500">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
+                                    <p class="text-amber-600 font-medium">Costo unitario: $${Number(item.costo || 0).toFixed(2)} (Total: $${(item.cantidad * (item.costo || 0)).toFixed(2)})</p>
                                 </div>
-                                <span class="text-[10px] px-2 py-0.5 rounded-full border ${badge} font-semibold">${item.estado}</span>
+                                <span class="px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-200 font-semibold text-[10px]">${item.estado}</span>
                             </div>
-                            <div class="text-xs text-slate-400 flex justify-between pt-1 border-t border-slate-100">
-                                <span>Envío: ${item.fechaEnvio || 'N/D'}</span>
-                                <span>Estimado: ${item.fechaEstimada || 'N/D'}</span>
+                            <div class="flex justify-end gap-2 pt-1 border-t border-slate-100">
+                                <button onclick="retornarDoblez('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-rotate-left"></i> Recibir a Stock
+                                </button>
                             </div>
-                            ${item.estado === 'En Taller' ? `
-                                <div class="pt-2 flex justify-end">
-                                    <button onclick="retornarPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
-                                        <i class="fa-solid fa-check"></i> Recibir del Taller
-                                    </button>
-                                </div>
-                            ` : ''}
                         </div>
                     `;
                 });
             }
 
-            document.getElementById('stat-en-pintura').innerText = enTallerCount;
+            const pinturaActiva = pinturaTaller.filter(i => i.estado === 'En Taller');
+            if (pinturaActiva.length === 0) {
+                contPintura.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">No hay piezas en pintura.</div>`;
+            } else {
+                pinturaActiva.forEach(item => {
+                    enPinturaCount += item.cantidad;
+                });
+            }
+
+            pinturaTaller.forEach(item => {
+                if (item.estado === 'Completado') retornadasCount += item.cantidad;
+                if (item.estado !== 'En Taller') return;
+
+                contPintura.innerHTML += `
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${item.nombre}</h4>
+                                <p class="text-slate-500">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full border bg-purple-50 text-purple-700 border-purple-200 font-semibold text-[10px]">${item.estado}</span>
+                        </div>
+                        <div class="text-slate-400 flex justify-between pt-1 border-t border-slate-100">
+                            <span>Envío: ${item.fechaEnvio || 'N/D'}</span>
+                            <span>Est: ${item.fechaEstimada || 'N/D'}</span>
+                        </div>
+                        <div class="flex justify-end pt-1">
+                            <button onclick="retornarPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-check"></i> Recibir de Pintura
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('stat-en-doblez').innerText = enDoblezCount;
+            document.getElementById('stat-en-pintura').innerText = enPinturaCount;
             document.getElementById('stat-retornadas').innerText = retornadasCount;
+        }
+
+        function abrirModalDoblez() {
+            const select = document.getElementById('doblez-select-pieza');
+            select.innerHTML = '';
+            inventario.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.nombre} (Stock actual: ${p.cantidad})</option>`;
+            });
+            document.getElementById('modal-doblez').classList.remove('hidden');
+        }
+
+        function cerrarModalDoblez() {
+            document.getElementById('modal-doblez').classList.add('hidden');
+        }
+
+        async function guardarEnvioDoblez() {
+            const piezaId = document.getElementById('doblez-select-pieza').value;
+            const cantidad = parseInt(document.getElementById('doblez-cantidad').value) || 0;
+            const taller = document.getElementById('doblez-taller').value.trim() || 'Taller de Doblez';
+            const costo = parseFloat(document.getElementById('doblez-costo').value) || 0;
+
+            if (cantidad <= 0) {
+                alert('Ingresa una cantidad válida.');
+                return;
+            }
+
+            const piezaObj = inventario.find(p => p.id === piezaId);
+            if (!piezaObj) return;
+
+            if (piezaObj.cantidad < cantidad) {
+                alert('No hay suficiente stock en inventario para enviar esa cantidad a doblez.');
+                return;
+            }
+
+            await db.collection('inventario').doc(piezaId).update({
+                cantidad: piezaObj.cantidad - cantidad
+            });
+
+            await db.collection('doblez').add({
+                piezaId: piezaObj.id,
+                nombre: piezaObj.nombre,
+                cantidad,
+                taller,
+                costo,
+                fechaEnvio: new Date().toISOString().split('T')[0],
+                estado: 'En Doblez'
+            });
+
+            cerrarModalDoblez();
+        }
+
+        async function retornarDoblez(id) {
+            const item = doblezTaller.find(p => p.id === id);
+            if (!item) return;
+
+            if (confirm(`¿Devolver estas ${item.cantidad} unidades de "${item.nombre}" al inventario general?`)) {
+                const piezaObj = inventario.find(p => p.id === item.piezaId);
+                if (piezaObj) {
+                    await db.collection('inventario').doc(item.piezaId).update({
+                        cantidad: piezaObj.cantidad + item.cantidad
+                    });
+                } else {
+                    await db.collection('inventario').add({
+                        nombre: item.nombre,
+                        cantidad: item.cantidad,
+                        precio: 0.00,
+                        categoria: 'General'
+                    });
+                }
+
+                await db.collection('doblez').doc(id).update({
+                    estado: 'Completado'
+                });
+            }
         }
 
         function abrirModalPintura() {
@@ -587,17 +926,28 @@
                 totalPiezasStock += (p.cantidad || 0);
             });
 
-            let totalPiezasTaller = 0;
+            let totalPiezasProcesos = 0;
+            doblezTaller.filter(p => p.estado === 'En Doblez').forEach(p => {
+                totalPiezasProcesos += (p.cantidad || 0);
+            });
             pinturaTaller.filter(p => p.estado === 'En Taller').forEach(p => {
-                totalPiezasTaller += (p.cantidad || 0);
+                totalPiezasProcesos += (p.cantidad || 0);
+            });
+
+            let deudaDoblezTotal = 0;
+            doblezTaller.filter(p => p.estado === 'En Doblez').forEach(p => {
+                deudaDoblezTotal += ((p.cantidad || 0) * (p.costo || 0));
             });
 
             document.getElementById('val-inventario-total').innerText = `$${valorTotal.toFixed(2)}`;
             document.getElementById('val-total-piezas').innerText = totalPiezasStock;
-            document.getElementById('val-total-taller').innerText = totalPiezasTaller;
+            document.getElementById('val-total-procesos').innerText = totalPiezasProcesos;
+            document.getElementById('val-deuda-doblez').innerText = `$${deudaDoblezTotal.toFixed(2)}`;
 
             const disponibles = inventario.filter(p => p.cantidad > 0).length;
             const agotadas = inventario.filter(p => p.cantidad === 0).length;
+            const enDoblezCount = doblezTaller.filter(p => p.estado === 'En Doblez').reduce((acc, curr) => acc + curr.cantidad, 0);
+            const enPinturaCount = pinturaTaller.filter(p => p.estado === 'En Taller').reduce((acc, curr) => acc + curr.cantidad, 0);
 
             document.getElementById('resumen-estados').innerHTML = `
                 <div class="flex justify-between py-1 border-b border-slate-100">
@@ -608,15 +958,19 @@
                     <span class="text-slate-600">Tipos de piezas agotadas</span>
                     <span class="font-bold text-rose-600">${agotadas}</span>
                 </div>
+                <div class="flex justify-between py-1 border-b border-slate-100">
+                    <span class="text-slate-600">Piezas en Doblez</span>
+                    <span class="font-bold text-amber-600">${enDoblezCount}</span>
+                </div>
                 <div class="flex justify-between py-1">
-                    <span class="text-slate-600">Piezas en Taller / Pintura</span>
-                    <span class="font-bold text-purple-600">${totalPiezasTaller}</span>
+                    <span class="text-slate-600">Piezas en Pintura</span>
+                    <span class="font-bold text-purple-600">${enPinturaCount}</span>
                 </div>
             `;
         }
 
         function exportarDatos() {
-            const datos = { inventario, pinturaTaller };
+            const datos = { inventario, doblezTaller, pinturaTaller };
             const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
