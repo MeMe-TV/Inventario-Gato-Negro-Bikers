@@ -113,9 +113,12 @@
                     <p class="text-[10px] text-purple-600 font-medium uppercase">En Pintura</p>
                     <p id="stat-en-pintura" class="text-lg font-bold text-purple-900">0</p>
                 </div>
-                <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-2xl">
-                    <p class="text-[10px] text-emerald-600 font-medium uppercase">Completadas</p>
-                    <p id="stat-retornadas" class="text-lg font-bold text-emerald-900">0</p>
+                <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <p class="text-[10px] text-emerald-600 font-medium uppercase">Completadas</p>
+                        <p id="stat-retornadas" class="text-lg font-bold text-emerald-900">0</p>
+                    </div>
+                    <button onclick="reiniciarCompletadas()" class="mt-1 text-[10px] text-emerald-700 hover:text-emerald-900 underline font-semibold text-left">Reiniciar a 0</button>
                 </div>
             </div>
 
@@ -739,6 +742,9 @@
                                 <span class="px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-200 font-semibold text-[10px]">${item.estado}</span>
                             </div>
                             <div class="flex justify-end gap-2 pt-1 border-t border-slate-100">
+                                <button onclick="eliminarProcesoDoblez('${item.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
                                 <button onclick="pasarDeDoblezAPintura('${item.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
                                     <i class="fa-solid fa-paintbrush"></i> Mandar a Pintura
                                 </button>
@@ -774,7 +780,10 @@
                             <span>Envío: ${item.fechaEnvio || 'N/D'}</span>
                             <span>Est: ${item.fechaEstimada || 'N/D'}</span>
                         </div>
-                        <div class="flex justify-end pt-1">
+                        <div class="flex justify-end gap-2 pt-1 border-t border-slate-100">
+                            <button onclick="eliminarProcesoPintura('${item.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-trash"></i> Eliminar
+                            </button>
                             <button onclick="abrirModalRecepcionPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
                                 <i class="fa-solid fa-clock"></i> Recibir y Añadir a Stock
                             </button>
@@ -786,6 +795,20 @@
             document.getElementById('stat-en-doblez').innerText = enDoblezCount;
             document.getElementById('stat-en-pintura').innerText = enPinturaCount;
             document.getElementById('stat-retornadas').innerText = retornadasCount;
+        }
+
+        // FUNCIÓN PARA REINICIAR LAS COMPLETADAS A 0
+        async function reiniciarCompletadas() {
+            if (confirm('¿Deseas reiniciar el contador de completadas a 0? Esto eliminará el historial de piezas ya recibidas del taller.')) {
+                const batch = db.batch();
+                pinturaTaller.forEach(item => {
+                    if (item.estado === 'Completado') {
+                        const ref = db.collection('pintura').doc(item.id);
+                        batch.delete(ref);
+                    }
+                });
+                await batch.commit();
+            }
         }
 
         // ACCIONES DE FABRICACIÓN Y DOBLEZ
@@ -824,6 +847,12 @@
             cerrarModalDoblez();
         }
 
+        async function eliminarProcesoDoblez(id) {
+            if (confirm('¿Estás seguro de eliminar este registro de doblez?')) {
+                await db.collection('doblez').doc(id).delete();
+            }
+        }
+
         async function pasarDeDoblezAPintura(id) {
             const item = doblezTaller.find(p => p.id === id);
             if (!item) return;
@@ -831,10 +860,8 @@
             const tallerPintura = prompt("Ingresa el nombre del taller o pintor:", "Taller de Pintura");
             if (!tallerPintura) return;
 
-            // Marcar doblez como completado
             await db.collection('doblez').doc(id).update({ estado: 'Completado' });
 
-            // Enviar a pintura
             await db.collection('pintura').add({
                 nombre: item.nombre,
                 cantidad: item.cantidad,
@@ -881,7 +908,13 @@
             cerrarModalPintura();
         }
 
-        // RECEPCIÓN DE PINTURA (AQUÍ ENTRAN AL INVENTARIO DE VENTA)
+        async function eliminarProcesoPintura(id) {
+            if (confirm('¿Estás seguro de eliminar este registro de pintura?')) {
+                await db.collection('pintura').doc(id).delete();
+            }
+        }
+
+        // RECEPCIÓN DE PINTURA
         function abrirModalRecepcionPintura(id) {
             const item = pinturaTaller.find(p => p.id === id);
             if (!item) return;
@@ -911,16 +944,13 @@
             const item = pinturaTaller.find(p => p.id === id);
             if (!item) return;
 
-            // BUSCAR SI YA EXISTE LA PIEZA EN EL INVENTARIO DE VENTA
             const existente = inventario.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
 
             if (existente) {
-                // Si ya existe, sumamos al stock existente
                 await db.collection('inventario').doc(existente.id).update({
                     cantidad: (existente.cantidad || 0) + item.cantidad
                 });
             } else {
-                // Si es nueva, la creamos en el inventario con precio por defecto $0.00 para que la edites después
                 await db.collection('inventario').add({
                     nombre: item.nombre,
                     cantidad: item.cantidad,
@@ -930,7 +960,6 @@
                 });
             }
 
-            // Marcar pintura como completada
             await db.collection('pintura').doc(id).update({
                 estado: 'Completado',
                 fechaLlegada: fechaLlegada || new Date().toISOString().split('T')[0],
