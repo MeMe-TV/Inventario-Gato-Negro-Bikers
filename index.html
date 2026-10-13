@@ -19,7 +19,6 @@
     <!-- PANTALLA DE BLOQUEO (LOGIN) CON LOGO -->
     <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-6 shadow-2xl">
-            <!-- Logo del Gato -->
             <div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto overflow-hidden shadow-inner border border-blue-100">
                 <img src="279696.png" alt="Gato Negro Logo" class="w-full h-full object-cover">
             </div>
@@ -61,10 +60,10 @@
     <!-- Contenido Principal -->
     <main class="max-w-md mx-auto p-4">
         
-        <!-- PESTAÑA 1: INVENTARIO -->
+        <!-- PESTAÑA 1: INVENTARIO POR MODELOS DE MOTO -->
         <section id="tab-inventario" class="space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-900">Inventario (Listas para Venta)</h2>
+                <h2 class="text-xl font-bold text-slate-900">Inventario de Accesorios</h2>
                 <button onclick="abrirModalPieza()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-semibold shadow-sm transition flex items-center gap-1">
                     <i class="fa-solid fa-plus"></i> Nueva Pieza
                 </button>
@@ -74,22 +73,32 @@
             <div class="space-y-2">
                 <div class="relative">
                     <i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-400"></i>
-                    <input type="text" id="buscarPieza" oninput="filtrarInventario()" placeholder="Buscar pieza..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="buscarPieza" oninput="filtrarInventario()" placeholder="Buscar accesorio o modelo..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
+                
+                <!-- CARPETAS POR MARCA / MODELO DE MOTO -->
+                <div class="pt-1">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 px-1"><i class="fa-solid fa-motorcycle text-blue-600"></i> Modelo / Marca de Moto:</p>
+                    <div id="contenedor-modelos-filtro" class="flex gap-1.5 overflow-x-auto pb-1 text-xs">
+                        <!-- Generado dinámicamente por JS (GR 250, Kadi, Ava, etc.) -->
+                    </div>
+                </div>
+
+                <!-- Filtro por Disponibilidad -->
+                <div class="flex gap-2 overflow-x-auto pb-1 text-xs pt-1">
                     <button onclick="filtrarEstado('todos')" id="filtro-todos" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium whitespace-nowrap">Todas</button>
                     <button onclick="filtrarEstado('Disponible')" id="filtro-Disponible" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">Disponibles</button>
                     <button onclick="filtrarEstado('Agotado')" id="filtro-Agotado" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">Agotadas</button>
                 </div>
             </div>
 
-            <!-- Lista de Piezas -->
-            <div id="lista-inventario" class="space-y-3">
+            <!-- Lista de Piezas Agrupadas por Modelo de Moto -->
+            <div id="lista-inventario" class="space-y-4">
                 <div class="text-center py-8 text-slate-400 text-sm">Cargando inventario...</div>
             </div>
         </section>
 
-        <!-- PESTAÑA 2: TALLER Y PROCESOS (DOBLEZ Y PINTURA) -->
+        <!-- PESTAÑA 2: TALLER Y PROCESOS -->
         <section id="tab-pintura" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-bold text-slate-900">Taller y Producción</h2>
@@ -195,7 +204,7 @@
         </div>
     </nav>
 
-    <!-- MODAL COTIZADOR / CALCULADORA PARA CLIENTES -->
+    <!-- MODAL COTIZADOR PARA CLIENTES -->
     <div id="modal-cotizador" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-2">
@@ -256,7 +265,7 @@
         </div>
     </div>
 
-    <!-- MODAL RECEPCIÓN DE PINTURA (CON HORA Y FECHA) -->
+    <!-- MODAL RECEPCIÓN DE PINTURA -->
     <div id="modal-recepcion-pintura" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
             <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
@@ -284,26 +293,26 @@
     <!-- MODAL NUEVA/EDITAR PIEZA -->
     <div id="modal-pieza" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <h3 id="modal-pieza-titulo" class="font-bold text-lg text-slate-900">Nueva Pieza</h3>
+            <h3 id="modal-pieza-titulo" class="font-bold text-lg text-slate-900">Nueva Pieza / Accesorio</h3>
             <input type="hidden" id="pieza-id">
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre de la Pieza</label>
-                    <input type="text" id="pieza-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. Parrilla reforzada GP">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Modelo / Marca de Moto</label>
+                    <input type="text" id="pieza-modelo" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. GR 250, Kadi, Ava, Bera...">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Accesorio / Pieza</label>
+                    <input type="text" id="pieza-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. Pechera, Parrilla, Sliders...">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad Inicial</label>
                         <input type="number" id="pieza-cantidad" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Precio Unitario ($)</label>
                         <input type="number" step="0.01" id="pieza-precio" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00">
                     </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Categoría / Modelo</label>
-                    <input type="text" id="pieza-categoria" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. Estándar">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
@@ -313,14 +322,18 @@
         </div>
     </div>
 
-    <!-- MODAL ENVIAR A DOBLEZ (INICIO DE FABRICACIÓN) -->
+    <!-- MODAL ENVIAR A DOBLEZ -->
     <div id="modal-doblez" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
             <h3 class="font-bold text-lg text-slate-900">Enviar a Doblez (Fabricación)</h3>
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre o Tipo de Pieza</label>
-                    <input type="text" id="doblez-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Parrilla reforzada GP">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Modelo de Moto</label>
+                    <input type="text" id="doblez-modelo" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. GR 250, Kadi, Ava...">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Accesorio</label>
+                    <input type="text" id="doblez-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Pechera, Parrilla reforzada">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -350,8 +363,12 @@
             <h3 class="font-bold text-lg text-slate-900">Enviar Piezas a Pintura</h3>
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre de la Pieza</label>
-                    <input type="text" id="pintura-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Parrilla reforzada GP">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Modelo de Moto</label>
+                    <input type="text" id="pintura-modelo" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. GR 250, Kadi, Ava...">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Accesorio</label>
+                    <input type="text" id="pintura-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Pechera, Sliders">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad a Enviar</label>
@@ -378,7 +395,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    <!-- Script Principal de la Aplicación -->
+    <!-- Script Principal -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAL-unKsFkwOw9_-uNo3TBa-eOkLXXlr-Q",
@@ -399,6 +416,7 @@
         let doblezTaller = [];
         let pinturaTaller = [];
         let filtroActual = 'todos';
+        let modeloFiltroActual = 'todos';
         let piezasCotizacion = [];
 
         // AUTENTICACIÓN
@@ -472,12 +490,13 @@
             }
         }
 
-        // CONTROL DE COTIZADOR
+        // COTIZADOR
         function abrirModalCotizador() {
             const select = document.getElementById('cotizador-select-pieza');
             select.innerHTML = '';
             inventario.filter(p => p.cantidad > 0).forEach(p => {
-                select.innerHTML += `<option value="${p.id}">${p.nombre} - $${Number(p.precio).toFixed(2)}</option>`;
+                const modelo = p.modelo ? `[${p.modelo}] ` : '';
+                select.innerHTML += `<option value="${p.id}">${modelo}${p.nombre} - $${Number(p.precio).toFixed(2)}</option>`;
             });
             document.getElementById('modal-cotizador').classList.remove('hidden');
             calcularCotizacion();
@@ -496,7 +515,7 @@
             if (existente) {
                 existente.cant++;
             } else {
-                piezasCotizacion.push({ id: pieza.id, nombre: pieza.nombre, precio: pieza.precio, cant: 1 });
+                piezasCotizacion.push({ id: pieza.id, nombre: pieza.nombre, modelo: pieza.modelo || '', precio: pieza.precio, cant: 1 });
             }
             renderizarListaCotizacion();
         }
@@ -518,9 +537,11 @@
                 cont.innerHTML = '<p class="text-slate-400 text-center py-2">Ninguna pieza seleccionada</p>';
             } else {
                 piezasCotizacion.forEach(p => {
+                    const mod = p.modelo ? `<span class="text-[10px] text-blue-600 font-bold block">${p.modelo}</span>` : '';
                     cont.innerHTML += `
                         <div class="flex justify-between items-center bg-slate-100 p-2 rounded-lg">
                             <div>
+                                ${mod}
                                 <strong class="text-slate-800">${p.nombre}</strong>
                                 <span class="text-slate-500 block">$${Number(p.precio).toFixed(2)} c/u</span>
                             </div>
@@ -553,7 +574,7 @@
             document.getElementById('cotizacion-total-usdt').innerText = `${totalUSDT.toFixed(2)} USDT`;
         }
 
-        // NAVEGACIÓN Y PESTAÑAS
+        // NAVEGACIÓN
         function cambiarTab(tab) {
             ['inventario', 'pintura', 'cuentas'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -566,60 +587,119 @@
         }
 
         function renderizarTodo() {
+            renderizarModelosFiltro();
             renderizarInventario();
             renderizarTallerProcesos();
             renderizarCuentas();
         }
 
-        // SECCIÓN INVENTARIO
+        // RENDERIZAR BOTONES DE MARCAS/MODELOS DE MOTO
+        function renderizarModelosFiltro() {
+            const cont = document.getElementById('contenedor-modelos-filtro');
+            cont.innerHTML = '';
+
+            // Obtener modelos únicos agregando GR 250 por defecto si no existe
+            const modelosEnBD = inventario.map(p => (p.modelo || 'General').trim());
+            const modelosUnicos = Array.from(new Set(['GR 250', ...modelosEnBD]));
+
+            const btnTodasClass = modeloFiltroActual === 'todos'
+                ? 'px-3 py-1 rounded-lg bg-blue-600 text-white font-bold whitespace-nowrap shadow-sm'
+                : 'px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap';
+
+            cont.innerHTML += `<button onclick="filtrarModelo('todos')" class="${btnTodasClass}"><i class="fa-solid fa-border-all"></i> Todas</button>`;
+
+            modelosUnicos.forEach(m => {
+                const btnClass = modeloFiltroActual.toLowerCase() === m.toLowerCase()
+                    ? 'px-3 py-1 rounded-lg bg-blue-600 text-white font-bold whitespace-nowrap shadow-sm'
+                    : 'px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap';
+
+                cont.innerHTML += `<button onclick="filtrarModelo('${m}')" class="${btnClass}"><i class="fa-solid fa-motorcycle"></i> ${m}</button>`;
+            });
+        }
+
+        function filtrarModelo(m) {
+            modeloFiltroActual = m;
+            renderizarModelosFiltro();
+            renderizarInventario();
+        }
+
+        // RENDERIZAR INVENTARIO AGRUPADO
         function renderizarInventario() {
             const buscador = document.getElementById('buscarPieza').value.toLowerCase();
             const contenedor = document.getElementById('lista-inventario');
             contenedor.innerHTML = '';
 
             const filtradas = inventario.filter(p => {
-                const coincideTexto = (p.nombre || '').toLowerCase().includes(buscador) || (p.categoria || '').toLowerCase().includes(buscador);
+                const texto = `${p.nombre || ''} ${p.modelo || ''}`.toLowerCase();
+                const coincideTexto = texto.includes(buscador);
                 const estado = p.cantidad > 0 ? 'Disponible' : 'Agotado';
                 const coincideEstado = filtroActual === 'todos' || estado === filtroActual;
-                return coincideTexto && coincideEstado;
+                const coincideModelo = modeloFiltroActual === 'todos' || (p.modelo || 'General').toLowerCase() === modeloFiltroActual.toLowerCase();
+                return coincideTexto && coincideEstado && coincideModelo;
             });
 
             if (filtradas.length === 0) {
-                contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No hay piezas listas en inventario.</div>`;
+                contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No hay repuestos registrados para esta selección.</div>`;
                 return;
             }
 
+            // Agrupar por Modelo de Moto
+            const grupos = {};
             filtradas.forEach(p => {
-                const enStock = p.cantidad > 0;
-                const badgeColor = enStock ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200';
-                const estadoTexto = enStock ? 'Disponible' : 'Agotado';
+                const mod = (p.modelo || 'General').trim();
+                if (!grupos[mod]) grupos[mod] = [];
+                grupos[mod].push(p);
+            });
 
-                contenedor.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                        <div class="space-y-1.5">
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-slate-800">${p.nombre}</h3>
-                                <span class="text-[10px] px-2 py-0.5 rounded-full border ${badgeColor} font-semibold">${estadoTexto}</span>
-                            </div>
-                            <p class="text-xs text-slate-500">Cat: ${p.categoria || 'General'} | Precio: $${Number(p.precio || 0).toFixed(2)}</p>
-                            
-                            <!-- Control Rápido de Stock (+ y -) -->
-                            <div class="flex items-center gap-3 pt-1">
-                                <span class="text-xs font-bold text-slate-700">Stock: ${p.cantidad}</span>
-                                <div class="flex items-center bg-slate-100 rounded-lg overflow-hidden border border-slate-200 text-xs shadow-sm">
-                                    <button onclick="cambiarCantidadRapida('${p.id}', -1)" class="px-2.5 py-1 hover:bg-rose-100 hover:text-rose-600 text-slate-600 transition" title="Restar 1">
-                                        <i class="fa-solid fa-minus"></i>
-                                    </button>
-                                    <span class="px-1 text-slate-300">|</span>
-                                    <button onclick="cambiarCantidadRapida('${p.id}', 1)" class="px-2.5 py-1 hover:bg-emerald-100 hover:text-emerald-600 text-slate-600 transition" title="Sumar 1">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
+            Object.keys(grupos).forEach(modelo => {
+                const piezas = grupos[modelo];
+                let piezasHTML = '';
+
+                piezas.forEach(p => {
+                    const enStock = p.cantidad > 0;
+                    const badgeColor = enStock ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200';
+                    const estadoTexto = enStock ? 'Disponible' : 'Agotado';
+
+                    piezasHTML += `
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-slate-800 text-sm">${p.nombre}</h4>
+                                    <span class="text-[9px] px-2 py-0.5 rounded-full border ${badgeColor} font-semibold">${estadoTexto}</span>
+                                </div>
+                                <p class="text-xs text-slate-500">Precio: <strong class="text-slate-700">$${Number(p.precio || 0).toFixed(2)}</strong></p>
+                                
+                                <div class="flex items-center gap-2 pt-1">
+                                    <span class="text-xs font-bold text-slate-700">Stock: ${p.cantidad}</span>
+                                    <div class="flex items-center bg-slate-100 rounded-lg overflow-hidden border border-slate-200 text-xs shadow-sm">
+                                        <button onclick="cambiarCantidadRapida('${p.id}', -1)" class="px-2 py-0.5 hover:bg-rose-100 hover:text-rose-600 text-slate-600 transition">
+                                            <i class="fa-solid fa-minus"></i>
+                                        </button>
+                                        <span class="px-1 text-slate-300">|</span>
+                                        <button onclick="cambiarCantidadRapida('${p.id}', 1)" class="px-2 py-0.5 hover:bg-emerald-100 hover:text-emerald-600 text-slate-600 transition">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="flex items-center gap-1">
+                                <button onclick="editarPieza('${p.id}')" class="p-1.5 text-slate-400 hover:text-blue-600 transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="eliminarPieza('${p.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 transition"><i class="fa-solid fa-trash"></i></button>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-1">
-                            <button onclick="editarPieza('${p.id}')" class="p-2 text-slate-400 hover:text-blue-600 transition"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="eliminarPieza('${p.id}')" class="p-2 text-slate-400 hover:text-rose-600 transition"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                });
+
+                contenedor.innerHTML += `
+                    <div class="bg-slate-100/70 border border-slate-200 rounded-2xl p-3 space-y-2.5">
+                        <div class="flex justify-between items-center px-1">
+                            <h3 class="font-bold text-xs uppercase tracking-wider text-blue-900 flex items-center gap-2">
+                                <i class="fa-solid fa-motorcycle text-blue-600"></i> ${modelo}
+                            </h3>
+                            <span class="text-[10px] bg-blue-200 text-blue-800 font-bold px-2 py-0.5 rounded-full">${piezas.length} ${piezas.length === 1 ? 'accesorio' : 'accesorios'}</span>
+                        </div>
+                        <div class="space-y-2">
+                            ${piezasHTML}
                         </div>
                     </div>
                 `;
@@ -661,19 +741,19 @@
             if (id) {
                 const p = inventario.find(item => item.id === id);
                 if (!p) return;
-                document.getElementById('modal-pieza-titulo').innerText = 'Editar Pieza';
+                document.getElementById('modal-pieza-titulo').innerText = 'Editar Accesorio';
                 document.getElementById('pieza-id').value = p.id;
+                document.getElementById('pieza-modelo').value = p.modelo || 'GR 250';
                 document.getElementById('pieza-nombre').value = p.nombre;
                 document.getElementById('pieza-cantidad').value = p.cantidad;
                 document.getElementById('pieza-precio').value = p.precio;
-                document.getElementById('pieza-categoria').value = p.categoria;
             } else {
-                document.getElementById('modal-pieza-titulo').innerText = 'Nueva Pieza';
+                document.getElementById('modal-pieza-titulo').innerText = 'Nuevo Accesorio';
                 document.getElementById('pieza-id').value = '';
+                document.getElementById('pieza-modelo').value = 'GR 250';
                 document.getElementById('pieza-nombre').value = '';
                 document.getElementById('pieza-cantidad').value = '';
                 document.getElementById('pieza-precio').value = '';
-                document.getElementById('pieza-categoria').value = '';
             }
         }
 
@@ -683,17 +763,17 @@
 
         async function guardarPieza() {
             const id = document.getElementById('pieza-id').value;
+            const modelo = document.getElementById('pieza-modelo').value.trim() || 'GR 250';
             const nombre = document.getElementById('pieza-nombre').value.trim();
             const cantidad = parseInt(document.getElementById('pieza-cantidad').value) || 0;
             const precio = parseFloat(document.getElementById('pieza-precio').value) || 0;
-            const categoria = document.getElementById('pieza-categoria').value.trim() || 'General';
 
             if (!nombre) {
-                alert('Por favor ingresa el nombre de la pieza.');
+                alert('Por favor ingresa el nombre del accesorio.');
                 return;
             }
 
-            const datosPieza = { nombre, cantidad, precio, categoria, fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp() };
+            const datosPieza = { modelo, nombre, cantidad, precio, fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp() };
 
             if (id) {
                 await db.collection('inventario').doc(id).update(datosPieza);
@@ -709,12 +789,12 @@
         }
 
         async function eliminarPieza(id) {
-            if (confirm('¿Estás seguro de eliminar esta pieza?')) {
+            if (confirm('¿Estás seguro de eliminar este accesorio del inventario?')) {
                 await db.collection('inventario').doc(id).delete();
             }
         }
 
-        // SECCIÓN TALLER Y PROCESOS (DOBLEZ Y PINTURA)
+        // SECCIÓN TALLER Y PROCESOS
         function renderizarTallerProcesos() {
             const contDoblez = document.getElementById('lista-doblez');
             const contPintura = document.getElementById('lista-pintura');
@@ -731,11 +811,12 @@
             } else {
                 doblezActivo.forEach(item => {
                     enDoblezCount += item.cantidad;
+                    const mod = item.modelo ? `[${item.modelo}] ` : '';
                     contDoblez.innerHTML += `
                         <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-sm">${item.nombre}</h4>
+                                    <h4 class="font-bold text-slate-800 text-sm">${mod}${item.nombre}</h4>
                                     <p class="text-slate-500">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
                                     <p class="text-amber-600 font-medium">Costo unitario: $${Number(item.costo || 0).toFixed(2)} (Total: $${(item.cantidad * (item.costo || 0)).toFixed(2)})</p>
                                 </div>
@@ -767,11 +848,13 @@
                 if (item.estado === 'Completado') retornadasCount += item.cantidad;
                 if (item.estado !== 'En Taller') return;
 
+                const mod = item.modelo ? `[${item.modelo}] ` : '';
+
                 contPintura.innerHTML += `
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="font-bold text-slate-800 text-sm">${item.nombre}</h4>
+                                <h4 class="font-bold text-slate-800 text-sm">${mod}${item.nombre}</h4>
                                 <p class="text-slate-500">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
                             </div>
                             <span class="px-2 py-0.5 rounded-full border bg-purple-50 text-purple-700 border-purple-200 font-semibold text-[10px]">${item.estado}</span>
@@ -797,7 +880,6 @@
             document.getElementById('stat-retornadas').innerText = retornadasCount;
         }
 
-        // FUNCIÓN PARA REINICIAR LAS COMPLETADAS A 0
         async function reiniciarCompletadas() {
             if (confirm('¿Deseas reiniciar el contador de completadas a 0? Esto eliminará el historial de piezas ya recibidas del taller.')) {
                 const batch = db.batch();
@@ -811,8 +893,9 @@
             }
         }
 
-        // ACCIONES DE FABRICACIÓN Y DOBLEZ
+        // ACCIONES DE DOBLEZ
         function abrirModalDoblez() {
+            document.getElementById('doblez-modelo').value = 'GR 250';
             document.getElementById('doblez-nombre').value = '';
             document.getElementById('doblez-cantidad').value = '';
             document.getElementById('doblez-costo').value = '';
@@ -825,6 +908,7 @@
         }
 
         async function guardarEnvioDoblez() {
+            const modelo = document.getElementById('doblez-modelo').value.trim() || 'GR 250';
             const nombre = document.getElementById('doblez-nombre').value.trim();
             const cantidad = parseInt(document.getElementById('doblez-cantidad').value) || 0;
             const taller = document.getElementById('doblez-taller').value.trim() || 'Taller de Doblez';
@@ -836,6 +920,7 @@
             }
 
             await db.collection('doblez').add({
+                modelo,
                 nombre,
                 cantidad,
                 taller,
@@ -863,6 +948,7 @@
             await db.collection('doblez').doc(id).update({ estado: 'Completado' });
 
             await db.collection('pintura').add({
+                modelo: item.modelo || 'GR 250',
                 nombre: item.nombre,
                 cantidad: item.cantidad,
                 taller: tallerPintura,
@@ -872,8 +958,9 @@
             });
         }
 
-        // ACCIONES DE PINTURA DIRECTA
+        // ACCIONES DE PINTURA
         function abrirModalPintura() {
+            document.getElementById('pintura-modelo').value = 'GR 250';
             document.getElementById('pintura-nombre').value = '';
             document.getElementById('pintura-cantidad').value = '';
             document.getElementById('pintura-taller').value = '';
@@ -886,6 +973,7 @@
         }
 
         async function guardarEnvioPintura() {
+            const modelo = document.getElementById('pintura-modelo').value.trim() || 'GR 250';
             const nombre = document.getElementById('pintura-nombre').value.trim();
             const cantidad = parseInt(document.getElementById('pintura-cantidad').value) || 0;
             const taller = document.getElementById('pintura-taller').value.trim() || 'Taller General';
@@ -897,6 +985,7 @@
             }
 
             await db.collection('pintura').add({
+                modelo,
                 nombre,
                 cantidad,
                 taller,
@@ -920,7 +1009,8 @@
             if (!item) return;
 
             document.getElementById('recepcion-pintura-id').value = id;
-            document.getElementById('recepcion-pintura-info').innerText = `Recibiendo: ${item.cantidad} x "${item.nombre}" (${item.taller})`;
+            const mod = item.modelo ? `[${item.modelo}] ` : '';
+            document.getElementById('recepcion-pintura-info').innerText = `Recibiendo: ${item.cantidad} x ${mod}"${item.nombre}" (${item.taller})`;
 
             const ahora = new Date();
             const fechaHoy = ahora.toISOString().split('T')[0];
@@ -944,7 +1034,13 @@
             const item = pinturaTaller.find(p => p.id === id);
             if (!item) return;
 
-            const existente = inventario.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
+            const modeloItem = (item.modelo || 'GR 250').toLowerCase();
+            const nombreItem = item.nombre.toLowerCase();
+
+            const existente = inventario.find(p => 
+                (p.modelo || 'GR 250').toLowerCase() === modeloItem && 
+                p.nombre.toLowerCase() === nombreItem
+            );
 
             if (existente) {
                 await db.collection('inventario').doc(existente.id).update({
@@ -952,10 +1048,10 @@
                 });
             } else {
                 await db.collection('inventario').add({
+                    modelo: item.modelo || 'GR 250',
                     nombre: item.nombre,
                     cantidad: item.cantidad,
                     precio: 0.00,
-                    categoria: 'Fabricada',
                     fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
@@ -1004,11 +1100,11 @@
 
             document.getElementById('resumen-estados').innerHTML = `
                 <div class="flex justify-between py-1 border-b border-slate-100">
-                    <span class="text-slate-600">Tipos de piezas en stock</span>
+                    <span class="text-slate-600">Accesorios en stock</span>
                     <span class="font-bold text-slate-800">${disponibles}</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-slate-100">
-                    <span class="text-slate-600">Tipos de piezas agotadas</span>
+                    <span class="text-slate-600">Accesorios agotados</span>
                     <span class="font-bold text-rose-600">${agotadas}</span>
                 </div>
                 <div class="flex justify-between py-1 border-b border-slate-100">
