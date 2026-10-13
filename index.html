@@ -253,6 +253,31 @@
         </div>
     </div>
 
+    <!-- MODAL RECEPCIÓN DE PINTURA (CON FECHA Y HORA) -->
+    <div id="modal-recepcion-pintura" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
+            <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-clock flex text-purple-600"></i> Confirmar Llegada de Pintura
+            </h3>
+            <input type="hidden" id="recepcion-pintura-id">
+            <div class="space-y-3 text-sm">
+                <p id="recepcion-pintura-info" class="text-xs text-slate-600 font-medium"></p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de Llegada</label>
+                    <input type="date" id="recepcion-fecha" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Hora de Llegada (ej. 14:00 o 2:00 PM)</label>
+                    <input type="time" id="recepcion-hora" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="cerrarModalRecepcionPintura()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
+                <button onclick="confirmarRetornoPintura()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Confirmar y Sumar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL NUEVA/EDITAR PIEZA -->
     <div id="modal-pieza" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
@@ -440,7 +465,7 @@
                 if (data && data.promedio) {
                     document.getElementById('tasa-bcv').value = data.promedio.toFixed(2);
                     if (!document.getElementById('tasa-usdt').value) {
-                        document.getElementById('tasa-usdt').value = (data.promedio * 1.05).toFixed(2); // Estimación USDT
+                        document.getElementById('tasa-usdt').value = (data.promedio * 1.05).toFixed(2);
                     }
                     calcularCotizacion();
                 }
@@ -741,6 +766,8 @@
                 if (item.estado === 'Completado') retornadasCount += item.cantidad;
                 if (item.estado !== 'En Taller') return;
 
+                const fechaRetornoTexto = item.fechaLlegada ? `${item.fechaLlegada} a las ${item.horaLlegada || 'N/D'}` : 'Pendiente';
+
                 contPintura.innerHTML += `
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
                         <div class="flex justify-between items-start">
@@ -750,13 +777,15 @@
                             </div>
                             <span class="px-2 py-0.5 rounded-full border bg-purple-50 text-purple-700 border-purple-200 font-semibold text-[10px]">${item.estado}</span>
                         </div>
-                        <div class="text-slate-400 flex justify-between pt-1 border-t border-slate-100">
-                            <span>Envío: ${item.fechaEnvio || 'N/D'}</span>
-                            <span>Est: ${item.fechaEstimada || 'N/D'}</span>
+                        <div class="text-slate-400 flex flex-col gap-0.5 pt-1 border-t border-slate-100">
+                            <div class="flex justify-between">
+                                <span>Fecha Envío: ${item.fechaEnvio || 'N/D'}</span>
+                                <span>Estimado: ${item.fechaEstimada || 'N/D'}</span>
+                            </div>
                         </div>
                         <div class="flex justify-end pt-1">
-                            <button onclick="retornarPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
-                                <i class="fa-solid fa-check"></i> Recibir de Pintura
+                            <button onclick="abrirModalRecepcionPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                                <i class="fa-solid fa-clock"></i> Recibir de Pintura
                             </button>
                         </div>
                     </div>
@@ -891,29 +920,60 @@
             cerrarModalPintura();
         }
 
-        async function retornarPintura(id) {
+        // CONTROL DE RECEPCIÓN CON HORA Y FECHA EXACTA
+        function abrirModalRecepcionPintura(id) {
             const item = pinturaTaller.find(p => p.id === id);
             if (!item) return;
 
-            if (confirm(`¿Deseas sumar estas ${item.cantidad} unidades de "${item.nombre}" de vuelta al inventario general?`)) {
-                const piezaObj = inventario.find(p => p.id === item.piezaId);
-                if (piezaObj) {
-                    await db.collection('inventario').doc(item.piezaId).update({
-                        cantidad: piezaObj.cantidad + item.cantidad
-                    });
-                } else {
-                    await db.collection('inventario').add({
-                        nombre: item.nombre,
-                        cantidad: item.cantidad,
-                        precio: 0.00,
-                        categoria: 'General'
-                    });
-                }
+            document.getElementById('recepcion-pintura-id').value = id;
+            document.getElementById('recepcion-pintura-info').innerText = `Recibiendo: ${item.cantidad} x "${item.nombre}" (${item.taller})`;
 
-                await db.collection('pintura').doc(id).update({
-                    estado: 'Completado'
+            // Colocar por defecto la fecha y hora actual
+            const ahora = new Date();
+            const fechaHoy = ahora.toISOString().split('T')[0];
+            const horaActual = ahora.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
+
+            document.getElementById('recepcion-fecha').value = fechaHoy;
+            document.getElementById('recepcion-hora').value = horaActual;
+
+            document.getElementById('modal-recepcion-pintura').classList.remove('hidden');
+        }
+
+        function cerrarModalRecepcionPintura() {
+            document.getElementById('modal-recepcion-pintura').classList.add('hidden');
+        }
+
+        async function confirmarRetornoPintura() {
+            const id = document.getElementById('recepcion-pintura-id').value;
+            const fechaLlegada = document.getElementById('recepcion-fecha').value;
+            const horaLlegada = document.getElementById('recepcion-hora').value;
+
+            const item = pinturaTaller.find(p => p.id === id);
+            if (!item) return;
+
+            // Retornar stock a inventario
+            const piezaObj = inventario.find(p => p.id === item.piezaId);
+            if (piezaObj) {
+                await db.collection('inventario').doc(item.piezaId).update({
+                    cantidad: piezaObj.cantidad + item.cantidad
+                });
+            } else {
+                await db.collection('inventario').add({
+                    nombre: item.nombre,
+                    cantidad: item.cantidad,
+                    precio: 0.00,
+                    categoria: 'General'
                 });
             }
+
+            // Actualizar estado en pintura con fecha y hora exacta
+            await db.collection('pintura').doc(id).update({
+                estado: 'Completado',
+                fechaLlegada: fechaLlegada || new Date().toISOString().split('T')[0],
+                horaLlegada: horaLlegada || '14:00'
+            });
+
+            cerrarModalRecepcionPintura();
         }
 
         // SECCIÓN CUENTAS
