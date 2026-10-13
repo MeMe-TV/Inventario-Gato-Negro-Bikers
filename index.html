@@ -64,7 +64,7 @@
         <!-- PESTAÑA 1: INVENTARIO -->
         <section id="tab-inventario" class="space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-900">Inventario de Piezas</h2>
+                <h2 class="text-xl font-bold text-slate-900">Inventario (Listas para Venta)</h2>
                 <button onclick="abrirModalPieza()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-semibold shadow-sm transition flex items-center gap-1">
                     <i class="fa-solid fa-plus"></i> Nueva Pieza
                 </button>
@@ -92,10 +92,10 @@
         <!-- PESTAÑA 2: TALLER Y PROCESOS (DOBLEZ Y PINTURA) -->
         <section id="tab-pintura" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-900">Taller y Procesos</h2>
+                <h2 class="text-xl font-bold text-slate-900">Taller y Producción</h2>
                 <div class="flex gap-1.5">
                     <button onclick="abrirModalDoblez()" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-2 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
-                        <i class="fa-solid fa-angles-right"></i> Enviar a Doblez
+                        <i class="fa-solid fa-angles-right"></i> Fabricar / Doblez
                     </button>
                     <button onclick="abrirModalPintura()" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-2 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
                         <i class="fa-solid fa-paintbrush"></i> A Pintura
@@ -114,7 +114,7 @@
                     <p id="stat-en-pintura" class="text-lg font-bold text-purple-900">0</p>
                 </div>
                 <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-2xl">
-                    <p class="text-[10px] text-emerald-600 font-medium uppercase">Listas</p>
+                    <p class="text-[10px] text-emerald-600 font-medium uppercase">Completadas</p>
                     <p id="stat-retornadas" class="text-lg font-bold text-emerald-900">0</p>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                 <p id="val-inventario-total" class="text-3xl font-extrabold">$0.00</p>
                 <div class="pt-2 border-t border-blue-500/30 flex justify-between text-xs">
                     <span>Piezas en Stock: <strong id="val-total-piezas">0</strong></span>
-                    <span>En Procesos: <strong id="val-total-procesos">0</strong></span>
+                    <span>En Fabricación: <strong id="val-total-procesos">0</strong></span>
                 </div>
             </div>
 
@@ -253,11 +253,11 @@
         </div>
     </div>
 
-    <!-- MODAL RECEPCIÓN DE PINTURA (CON FECHA Y HORA) -->
+    <!-- MODAL RECEPCIÓN DE PINTURA (CON HORA Y FECHA) -->
     <div id="modal-recepcion-pintura" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
             <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-clock flex text-purple-600"></i> Confirmar Llegada de Pintura
+                <i class="fa-solid fa-clock text-purple-600"></i> Confirmar Llegada de Pintura
             </h3>
             <input type="hidden" id="recepcion-pintura-id">
             <div class="space-y-3 text-sm">
@@ -273,7 +273,7 @@
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="cerrarModalRecepcionPintura()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
-                <button onclick="confirmarRetornoPintura()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Confirmar y Sumar</button>
+                <button onclick="confirmarRetornoPintura()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Confirmar y Añadir a Stock</button>
             </div>
         </div>
     </div>
@@ -286,7 +286,7 @@
             <div class="space-y-3 text-sm">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre de la Pieza</label>
-                    <input type="text" id="pieza-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. Tapa Lateral">
+                    <input type="text" id="pieza-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. Parrilla reforzada GP">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -310,33 +310,33 @@
         </div>
     </div>
 
-    <!-- MODAL ENVIAR A DOBLEZ -->
+    <!-- MODAL ENVIAR A DOBLEZ (INICIO DE FABRICACIÓN) -->
     <div id="modal-doblez" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <h3 class="font-bold text-lg text-slate-900">Enviar Piezas a Doblez</h3>
+            <h3 class="font-bold text-lg text-slate-900">Enviar a Doblez (Fabricación)</h3>
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Seleccionar Pieza del Inventario</label>
-                    <select id="doblez-select-pieza" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
-                        <!-- Rellenado por JS -->
-                    </select>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre o Tipo de Pieza</label>
+                    <input type="text" id="doblez-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Parrilla reforzada GP">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad a Fabricar</label>
+                        <input type="number" id="doblez-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="1">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Costo Doblez ($ c/u)</label>
+                        <input type="number" step="0.01" id="doblez-costo" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="0.00">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad a Enviar</label>
-                    <input type="number" id="doblez-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="1">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Doblador / Taller</label>
-                    <input type="text" id="doblez-taller" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Taller de Dobles Don Pedro">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Costo por Doblez / Pieza ($)</label>
-                    <input type="number" step="0.01" id="doblez-costo" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="0.00">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Doblador</label>
+                    <input type="text" id="doblez-taller" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Taller Don Pedro">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="cerrarModalDoblez()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
-                <button onclick="guardarEnvioDoblez()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Enviar</button>
+                <button onclick="guardarEnvioDoblez()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Iniciar Doblez</button>
             </div>
         </div>
     </div>
@@ -347,17 +347,15 @@
             <h3 class="font-bold text-lg text-slate-900">Enviar Piezas a Pintura</h3>
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Seleccionar Pieza del Inventario</label>
-                    <select id="pintura-select-pieza" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white">
-                        <!-- Rellenado por JS -->
-                    </select>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre de la Pieza</label>
+                    <input type="text" id="pintura-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Parrilla reforzada GP">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad a Enviar</label>
                     <input type="number" id="pintura-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="1">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Taller / Pintor</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Pintor / Taller</label>
                     <input type="text" id="pintura-taller" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Taller Don José">
                 </div>
                 <div>
@@ -367,7 +365,7 @@
             </div>
             <div class="flex gap-2 pt-2">
                 <button onclick="cerrarModalPintura()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
-                <button onclick="guardarEnvioPintura()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Enviar</button>
+                <button onclick="guardarEnvioPintura()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Enviar a Pintura</button>
             </div>
         </div>
     </div>
@@ -379,7 +377,6 @@
 
     <!-- Script Principal de la Aplicación -->
     <script>
-        // Configuración oficial de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAL-unKsFkwOw9_-uNo3TBa-eOkLXXlr-Q",
             authDomain: "gato-negr0-inventario.firebaseapp.com",
@@ -389,12 +386,10 @@
             appId: "1:960767649336:web:9e7cc599bb519fc8bc28cd"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // LISTA BLANCA DE CORREOS AUTORIZADOS
         const CORREOS_AUTORIZADOS = ["gatonegroinventario@gmail.com"];
 
         let inventario = [];
@@ -555,7 +550,7 @@
             document.getElementById('cotizacion-total-usdt').innerText = `${totalUSDT.toFixed(2)} USDT`;
         }
 
-        // CONTROL DE PESTAÑAS Y NAVEGACIÓN
+        // NAVEGACIÓN Y PESTAÑAS
         function cambiarTab(tab) {
             ['inventario', 'pintura', 'cuentas'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -587,7 +582,7 @@
             });
 
             if (filtradas.length === 0) {
-                contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No se encontraron piezas.</div>`;
+                contenedor.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No hay piezas listas en inventario.</div>`;
                 return;
             }
 
@@ -744,8 +739,8 @@
                                 <span class="px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-200 font-semibold text-[10px]">${item.estado}</span>
                             </div>
                             <div class="flex justify-end gap-2 pt-1 border-t border-slate-100">
-                                <button onclick="retornarDoblez('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
-                                    <i class="fa-solid fa-arrow-rotate-left"></i> Recibir a Stock
+                                <button onclick="pasarDeDoblezAPintura('${item.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-paintbrush"></i> Mandar a Pintura
                                 </button>
                             </div>
                         </div>
@@ -766,8 +761,6 @@
                 if (item.estado === 'Completado') retornadasCount += item.cantidad;
                 if (item.estado !== 'En Taller') return;
 
-                const fechaRetornoTexto = item.fechaLlegada ? `${item.fechaLlegada} a las ${item.horaLlegada || 'N/D'}` : 'Pendiente';
-
                 contPintura.innerHTML += `
                     <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
                         <div class="flex justify-between items-start">
@@ -777,15 +770,13 @@
                             </div>
                             <span class="px-2 py-0.5 rounded-full border bg-purple-50 text-purple-700 border-purple-200 font-semibold text-[10px]">${item.estado}</span>
                         </div>
-                        <div class="text-slate-400 flex flex-col gap-0.5 pt-1 border-t border-slate-100">
-                            <div class="flex justify-between">
-                                <span>Fecha Envío: ${item.fechaEnvio || 'N/D'}</span>
-                                <span>Estimado: ${item.fechaEstimada || 'N/D'}</span>
-                            </div>
+                        <div class="text-slate-400 flex justify-between pt-1 border-t border-slate-100">
+                            <span>Envío: ${item.fechaEnvio || 'N/D'}</span>
+                            <span>Est: ${item.fechaEstimada || 'N/D'}</span>
                         </div>
                         <div class="flex justify-end pt-1">
                             <button onclick="abrirModalRecepcionPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
-                                <i class="fa-solid fa-clock"></i> Recibir de Pintura
+                                <i class="fa-solid fa-clock"></i> Recibir y Añadir a Stock
                             </button>
                         </div>
                     </div>
@@ -797,12 +788,12 @@
             document.getElementById('stat-retornadas').innerText = retornadasCount;
         }
 
+        // ACCIONES DE FABRICACIÓN Y DOBLEZ
         function abrirModalDoblez() {
-            const select = document.getElementById('doblez-select-pieza');
-            select.innerHTML = '';
-            inventario.forEach(p => {
-                select.innerHTML += `<option value="${p.id}">${p.nombre} (Stock actual: ${p.cantidad})</option>`;
-            });
+            document.getElementById('doblez-nombre').value = '';
+            document.getElementById('doblez-cantidad').value = '';
+            document.getElementById('doblez-costo').value = '';
+            document.getElementById('doblez-taller').value = '';
             document.getElementById('modal-doblez').classList.remove('hidden');
         }
 
@@ -811,31 +802,18 @@
         }
 
         async function guardarEnvioDoblez() {
-            const piezaId = document.getElementById('doblez-select-pieza').value;
+            const nombre = document.getElementById('doblez-nombre').value.trim();
             const cantidad = parseInt(document.getElementById('doblez-cantidad').value) || 0;
             const taller = document.getElementById('doblez-taller').value.trim() || 'Taller de Doblez';
             const costo = parseFloat(document.getElementById('doblez-costo').value) || 0;
 
-            if (cantidad <= 0) {
-                alert('Ingresa una cantidad válida.');
+            if (!nombre || cantidad <= 0) {
+                alert('Ingresa un nombre y una cantidad válida.');
                 return;
             }
-
-            const piezaObj = inventario.find(p => p.id === piezaId);
-            if (!piezaObj) return;
-
-            if (piezaObj.cantidad < cantidad) {
-                alert('No hay suficiente stock en inventario para enviar esa cantidad a doblez.');
-                return;
-            }
-
-            await db.collection('inventario').doc(piezaId).update({
-                cantidad: piezaObj.cantidad - cantidad
-            });
 
             await db.collection('doblez').add({
-                piezaId: piezaObj.id,
-                nombre: piezaObj.nombre,
+                nombre,
                 cantidad,
                 taller,
                 costo,
@@ -846,37 +824,33 @@
             cerrarModalDoblez();
         }
 
-        async function retornarDoblez(id) {
+        async function pasarDeDoblezAPintura(id) {
             const item = doblezTaller.find(p => p.id === id);
             if (!item) return;
 
-            if (confirm(`¿Devolver estas ${item.cantidad} unidades de "${item.nombre}" al inventario general?`)) {
-                const piezaObj = inventario.find(p => p.id === item.piezaId);
-                if (piezaObj) {
-                    await db.collection('inventario').doc(item.piezaId).update({
-                        cantidad: piezaObj.cantidad + item.cantidad
-                    });
-                } else {
-                    await db.collection('inventario').add({
-                        nombre: item.nombre,
-                        cantidad: item.cantidad,
-                        precio: 0.00,
-                        categoria: 'General'
-                    });
-                }
+            const tallerPintura = prompt("Ingresa el nombre del taller o pintor:", "Taller de Pintura");
+            if (!tallerPintura) return;
 
-                await db.collection('doblez').doc(id).update({
-                    estado: 'Completado'
-                });
-            }
+            // Marcar doblez como completado
+            await db.collection('doblez').doc(id).update({ estado: 'Completado' });
+
+            // Enviar a pintura
+            await db.collection('pintura').add({
+                nombre: item.nombre,
+                cantidad: item.cantidad,
+                taller: tallerPintura,
+                fechaEnvio: new Date().toISOString().split('T')[0],
+                fechaEstimada: 'Por definir',
+                estado: 'En Taller'
+            });
         }
 
+        // ACCIONES DE PINTURA DIRECTA
         function abrirModalPintura() {
-            const select = document.getElementById('pintura-select-pieza');
-            select.innerHTML = '';
-            inventario.forEach(p => {
-                select.innerHTML += `<option value="${p.id}">${p.nombre} (Stock actual: ${p.cantidad})</option>`;
-            });
+            document.getElementById('pintura-nombre').value = '';
+            document.getElementById('pintura-cantidad').value = '';
+            document.getElementById('pintura-taller').value = '';
+            document.getElementById('pintura-fecha').value = '';
             document.getElementById('modal-pintura').classList.remove('hidden');
         }
 
@@ -885,31 +859,18 @@
         }
 
         async function guardarEnvioPintura() {
-            const piezaId = document.getElementById('pintura-select-pieza').value;
+            const nombre = document.getElementById('pintura-nombre').value.trim();
             const cantidad = parseInt(document.getElementById('pintura-cantidad').value) || 0;
             const taller = document.getElementById('pintura-taller').value.trim() || 'Taller General';
             const fechaEstimada = document.getElementById('pintura-fecha').value;
 
-            if (cantidad <= 0) {
-                alert('Ingresa una cantidad válida.');
+            if (!nombre || cantidad <= 0) {
+                alert('Ingresa un nombre y una cantidad válida.');
                 return;
             }
-
-            const piezaObj = inventario.find(p => p.id === piezaId);
-            if (!piezaObj) return;
-
-            if (piezaObj.cantidad < cantidad) {
-                alert('No hay suficiente stock en inventario para enviar esa cantidad a pintura.');
-                return;
-            }
-
-            await db.collection('inventario').doc(piezaId).update({
-                cantidad: piezaObj.cantidad - cantidad
-            });
 
             await db.collection('pintura').add({
-                piezaId: piezaObj.id,
-                nombre: piezaObj.nombre,
+                nombre,
                 cantidad,
                 taller,
                 fechaEnvio: new Date().toISOString().split('T')[0],
@@ -920,7 +881,7 @@
             cerrarModalPintura();
         }
 
-        // CONTROL DE RECEPCIÓN CON HORA Y FECHA EXACTA
+        // RECEPCIÓN DE PINTURA (AQUÍ ENTRAN AL INVENTARIO DE VENTA)
         function abrirModalRecepcionPintura(id) {
             const item = pinturaTaller.find(p => p.id === id);
             if (!item) return;
@@ -928,10 +889,9 @@
             document.getElementById('recepcion-pintura-id').value = id;
             document.getElementById('recepcion-pintura-info').innerText = `Recibiendo: ${item.cantidad} x "${item.nombre}" (${item.taller})`;
 
-            // Colocar por defecto la fecha y hora actual
             const ahora = new Date();
             const fechaHoy = ahora.toISOString().split('T')[0];
-            const horaActual = ahora.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
+            const horaActual = ahora.toTimeString().split(' ')[0].substring(0, 5);
 
             document.getElementById('recepcion-fecha').value = fechaHoy;
             document.getElementById('recepcion-hora').value = horaActual;
@@ -951,22 +911,26 @@
             const item = pinturaTaller.find(p => p.id === id);
             if (!item) return;
 
-            // Retornar stock a inventario
-            const piezaObj = inventario.find(p => p.id === item.piezaId);
-            if (piezaObj) {
-                await db.collection('inventario').doc(item.piezaId).update({
-                    cantidad: piezaObj.cantidad + item.cantidad
+            // BUSCAR SI YA EXISTE LA PIEZA EN EL INVENTARIO DE VENTA
+            const existente = inventario.find(p => p.nombre.toLowerCase() === item.nombre.toLowerCase());
+
+            if (existente) {
+                // Si ya existe, sumamos al stock existente
+                await db.collection('inventario').doc(existente.id).update({
+                    cantidad: (existente.cantidad || 0) + item.cantidad
                 });
             } else {
+                // Si es nueva, la creamos en el inventario con precio por defecto $0.00 para que la edites después
                 await db.collection('inventario').add({
                     nombre: item.nombre,
                     cantidad: item.cantidad,
                     precio: 0.00,
-                    categoria: 'General'
+                    categoria: 'Fabricada',
+                    fechaActualizacion: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
 
-            // Actualizar estado en pintura con fecha y hora exacta
+            // Marcar pintura como completada
             await db.collection('pintura').doc(id).update({
                 estado: 'Completado',
                 fechaLlegada: fechaLlegada || new Date().toISOString().split('T')[0],
