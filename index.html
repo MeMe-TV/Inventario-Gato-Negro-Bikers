@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light">
 <head>
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
@@ -7,6 +7,11 @@
     <title>Gestión de Inventario y Taller - Gato Negro Bikers</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="theme-color" content="#2563eb">
@@ -14,43 +19,48 @@
         body { -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 pb-24">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 pb-24 transition-colors duration-200">
 
     <!-- PANTALLA DE BLOQUEO (LOGIN) CON LOGO -->
     <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-6 shadow-2xl">
-            <div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto overflow-hidden shadow-inner border border-blue-100">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 text-center space-y-6 shadow-2xl border border-slate-100 dark:border-slate-700">
+            <div class="w-20 h-20 bg-blue-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center mx-auto overflow-hidden shadow-inner border border-blue-100 dark:border-slate-600">
                 <img src="279696.png" alt="Gato Negro Logo" class="w-full h-full object-cover">
             </div>
             <div>
-                <h2 class="text-xl font-bold text-slate-900">Gato Negro Bikers</h2>
-                <p class="text-xs text-slate-500 mt-1">Acceso privado y seguro al inventario</p>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Gato Negro Bikers</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Acceso privado y seguro al inventario</p>
             </div>
             
-            <button onclick="iniciarSesionConGoogle()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-3 text-sm transition shadow-md">
+            <button onclick="iniciarSesionConGoogle()" class="w-full bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-3 text-sm transition shadow-md">
                 <i class="fa-brands fa-google text-lg"></i>
                 <span>Iniciar con Google</span>
             </button>
 
-            <div id="login-error" class="hidden text-xs bg-rose-50 border border-rose-200 text-rose-600 p-3 rounded-xl"></div>
+            <div id="login-error" class="hidden text-xs bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-300 p-3 rounded-xl"></div>
         </div>
     </div>
 
-    <!-- Header con Logo -->
-    <header class="bg-blue-600 text-white shadow-md sticky top-0 z-50">
+    <!-- Header con Logo y Selector de Modo Oscuro -->
+    <header class="bg-blue-600 dark:bg-slate-800 text-white shadow-md sticky top-0 z-50 transition-colors duration-200">
         <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="text-base font-bold flex items-center gap-2.5">
                 <img src="279696.png" alt="Logo" class="w-7 h-7 rounded-lg object-cover bg-white/10 border border-white/20">
                 <span>Gato Negro Taller</span>
             </h1>
             <div class="flex items-center gap-1.5">
+                <!-- BOTÓN MODO OSCURO / CLARO -->
+                <button onclick="toggleDarkMode()" id="btn-theme" title="Cambiar Tema" class="text-xs bg-blue-700 dark:bg-slate-700 hover:bg-blue-800 dark:hover:bg-slate-600 px-2.5 py-1.5 rounded-lg font-medium transition text-amber-300">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+
                 <button onclick="abrirModalCotizador()" class="text-xs bg-emerald-500 hover:bg-emerald-600 px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-sm">
                     <i class="fa-solid fa-calculator"></i> Cotizar
                 </button>
-                <button onclick="exportarDatos()" class="text-xs bg-blue-700 hover:bg-blue-800 px-2.5 py-1.5 rounded-lg font-medium transition">
+                <button onclick="exportarDatos()" class="text-xs bg-blue-700 dark:bg-slate-700 hover:bg-blue-800 dark:hover:bg-slate-600 px-2.5 py-1.5 rounded-lg font-medium transition">
                     <i class="fa-solid fa-download"></i>
                 </button>
-                <button onclick="cerrarSesion()" title="Cerrar Sesión" class="text-xs bg-blue-700 hover:bg-blue-800 px-2 py-1.5 rounded-lg font-medium transition">
+                <button onclick="cerrarSesion()" title="Cerrar Sesión" class="text-xs bg-blue-700 dark:bg-slate-700 hover:bg-blue-800 dark:hover:bg-slate-600 px-2 py-1.5 rounded-lg font-medium transition">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
@@ -63,7 +73,7 @@
         <!-- PESTAÑA 1: INVENTARIO POR MODELOS DE MOTO -->
         <section id="tab-inventario" class="space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-900">Inventario de Accesorios</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Inventario de Accesorios</h2>
                 <button onclick="abrirModalPieza()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-sm font-semibold shadow-sm transition flex items-center gap-1">
                     <i class="fa-solid fa-plus"></i> Nueva Pieza
                 </button>
@@ -73,22 +83,22 @@
             <div class="space-y-2">
                 <div class="relative">
                     <i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-400"></i>
-                    <input type="text" id="buscarPieza" oninput="filtrarInventario()" placeholder="Buscar accesorio o modelo..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="buscarPieza" oninput="filtrarInventario()" placeholder="Buscar accesorio o modelo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white">
                 </div>
                 
                 <!-- CARPETAS POR MARCA / MODELO DE MOTO -->
                 <div class="pt-1">
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 px-1"><i class="fa-solid fa-motorcycle text-blue-600"></i> Modelo / Marca de Moto:</p>
+                    <p class="text-[11px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-1.5 px-1"><i class="fa-solid fa-motorcycle text-blue-600 dark:text-blue-400"></i> Modelo / Marca de Moto:</p>
                     <div id="contenedor-modelos-filtro" class="flex gap-1.5 overflow-x-auto pb-1 text-xs">
-                        <!-- Generado dinámicamente por JS (GR 250, Kadi, Ava, etc.) -->
+                        <!-- Generado dinámicamente por JS -->
                     </div>
                 </div>
 
                 <!-- Filtro por Disponibilidad -->
                 <div class="flex gap-2 overflow-x-auto pb-1 text-xs pt-1">
                     <button onclick="filtrarEstado('todos')" id="filtro-todos" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium whitespace-nowrap">Todas</button>
-                    <button onclick="filtrarEstado('Disponible')" id="filtro-Disponible" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">Disponibles</button>
-                    <button onclick="filtrarEstado('Agotado')" id="filtro-Agotado" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap">Agotadas</button>
+                    <button onclick="filtrarEstado('Disponible')" id="filtro-Disponible" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap">Disponibles</button>
+                    <button onclick="filtrarEstado('Agotado')" id="filtro-Agotado" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap">Agotadas</button>
                 </div>
             </div>
 
@@ -101,7 +111,7 @@
         <!-- PESTAÑA 2: TALLER Y PROCESOS -->
         <section id="tab-pintura" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-slate-900">Taller y Producción</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Taller y Producción</h2>
                 <div class="flex gap-1.5">
                     <button onclick="abrirModalDoblez()" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-2 rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
                         <i class="fa-solid fa-angles-right"></i> Fabricar / Doblez
@@ -114,34 +124,34 @@
 
             <!-- Tarjetas de Resumen Taller -->
             <div class="grid grid-cols-3 gap-2">
-                <div class="bg-amber-50 border border-amber-100 p-2.5 rounded-2xl">
-                    <p class="text-[10px] text-amber-600 font-medium uppercase">En Doblez</p>
-                    <p id="stat-en-doblez" class="text-lg font-bold text-amber-900">0</p>
+                <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900/50 p-2.5 rounded-2xl">
+                    <p class="text-[10px] text-amber-600 dark:text-amber-400 font-medium uppercase">En Doblez</p>
+                    <p id="stat-en-doblez" class="text-lg font-bold text-amber-900 dark:text-amber-200">0</p>
                 </div>
-                <div class="bg-purple-50 border border-purple-100 p-2.5 rounded-2xl">
-                    <p class="text-[10px] text-purple-600 font-medium uppercase">En Pintura</p>
-                    <p id="stat-en-pintura" class="text-lg font-bold text-purple-900">0</p>
+                <div class="bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 p-2.5 rounded-2xl">
+                    <p class="text-[10px] text-purple-600 dark:text-purple-400 font-medium uppercase">En Pintura</p>
+                    <p id="stat-en-pintura" class="text-lg font-bold text-purple-900 dark:text-purple-200">0</p>
                 </div>
-                <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-2xl flex flex-col justify-between">
+                <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50 p-2.5 rounded-2xl flex flex-col justify-between">
                     <div>
-                        <p class="text-[10px] text-emerald-600 font-medium uppercase">Completadas</p>
-                        <p id="stat-retornadas" class="text-lg font-bold text-emerald-900">0</p>
+                        <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium uppercase">Completadas</p>
+                        <p id="stat-retornadas" class="text-lg font-bold text-emerald-900 dark:text-emerald-200">0</p>
                     </div>
-                    <button onclick="reiniciarCompletadas()" class="mt-1 text-[10px] text-emerald-700 hover:text-emerald-900 underline font-semibold text-left">Reiniciar a 0</button>
+                    <button onclick="reiniciarCompletadas()" class="mt-1 text-[10px] text-emerald-700 dark:text-emerald-400 hover:underline font-semibold text-left">Reiniciar a 0</button>
                 </div>
             </div>
 
             <!-- Contenedor de Listas del Taller -->
             <div class="space-y-4 pt-1">
                 <div>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-2 px-1"><i class="fa-solid fa-wave-square"></i> Piezas en Proceso de Doblez</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-2 px-1"><i class="fa-solid fa-wave-square"></i> Piezas en Proceso de Doblez</h3>
                     <div id="lista-doblez" class="space-y-3">
                         <!-- Inyectado por JS -->
                     </div>
                 </div>
 
                 <div class="pt-2">
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-purple-700 mb-2 px-1"><i class="fa-solid fa-palette"></i> Piezas en Proceso de Pintura</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 mb-2 px-1"><i class="fa-solid fa-palette"></i> Piezas en Proceso de Pintura</h3>
                     <div id="lista-pintura" class="space-y-3">
                         <!-- Inyectado por JS -->
                     </div>
@@ -151,9 +161,9 @@
 
         <!-- PESTAÑA 3: CUENTAS / FINANZAS -->
         <section id="tab-cuentas" class="hidden space-y-4">
-            <h2 class="text-xl font-bold text-slate-900">Cuentas y Finanzas</h2>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Cuentas y Finanzas</h2>
             
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 rounded-2xl shadow-md space-y-3">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-slate-800 dark:to-slate-900 border border-blue-500/20 text-white p-5 rounded-2xl shadow-md space-y-3">
                 <p class="text-xs uppercase tracking-wider opacity-80">Valor Total del Inventario</p>
                 <p id="val-inventario-total" class="text-3xl font-extrabold">$0.00</p>
                 <div class="pt-2 border-t border-blue-500/30 flex justify-between text-xs">
@@ -163,20 +173,20 @@
             </div>
 
             <!-- Tarjeta de Deuda con Doblador -->
-            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl shadow-sm space-y-2">
-                <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-file-invoice-dollar text-amber-600"></i> Cuenta del Doblador
+            <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 p-4 rounded-2xl shadow-sm space-y-2">
+                <h3 class="font-bold text-amber-900 dark:text-amber-300 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice-dollar text-amber-600 dark:text-amber-400"></i> Cuenta del Doblador
                 </h3>
                 <div class="flex justify-between items-center text-sm pt-1">
-                    <span class="text-amber-700">Deuda total por dobleces:</span>
-                    <strong id="val-deuda-doblez" class="text-lg font-extrabold text-amber-900">$0.00</strong>
+                    <span class="text-amber-700 dark:text-amber-400">Deuda total por dobleces:</span>
+                    <strong id="val-deuda-doblez" class="text-lg font-extrabold text-amber-900 dark:text-amber-200">$0.00</strong>
                 </div>
-                <p class="text-[11px] text-amber-600">Calculado a partir de las piezas enviadas a doblar.</p>
+                <p class="text-[11px] text-amber-600 dark:text-amber-400/80">Calculado a partir de las piezas enviadas a doblar.</p>
             </div>
 
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie text-blue-600"></i> Resumen de Estados
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
+                <h3 class="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-blue-600 dark:text-blue-400"></i> Resumen de Estados
                 </h3>
                 <div id="resumen-estados" class="space-y-2 text-sm">
                     <!-- Dinámico -->
@@ -187,9 +197,9 @@
     </main>
 
     <!-- Barra de Navegación Inferior -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-lg z-50 transition-colors duration-200">
         <div class="max-w-md mx-auto grid grid-cols-3 py-2">
-            <button onclick="cambiarTab('inventario')" id="nav-inventario" class="flex flex-col items-center justify-center text-blue-600 font-medium text-xs gap-1">
+            <button onclick="cambiarTab('inventario')" id="nav-inventario" class="flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 font-medium text-xs gap-1">
                 <i class="fa-solid fa-boxes-stacked text-lg"></i>
                 Inventario
             </button>
@@ -206,34 +216,34 @@
 
     <!-- MODAL COTIZADOR PARA CLIENTES -->
     <div id="modal-cotizador" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-calculator text-emerald-600"></i> Cotizar Cliente
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto border border-slate-100 dark:border-slate-700">
+            <div class="flex justify-between items-center border-b dark:border-slate-700 pb-2">
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-emerald-600 dark:text-emerald-400"></i> Cotizar Cliente
                 </h3>
-                <button onclick="cerrarModalCotizador()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="cerrarModalCotizador()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <!-- Tasas de Cambio -->
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2 text-xs">
+            <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
                 <div class="flex justify-between items-center">
-                    <span class="font-semibold text-slate-700">Tasa BCV (Bs/$):</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-300">Tasa BCV (Bs/$):</span>
                     <div class="flex items-center gap-1">
-                        <input type="number" id="tasa-bcv" step="0.01" oninput="calcularCotizacion()" class="w-20 px-2 py-1 border border-slate-300 rounded text-right font-bold text-emerald-700 bg-white" placeholder="0.00">
-                        <button onclick="obtenerTasaBCV()" class="p-1 text-blue-600 hover:text-blue-800" title="Actualizar BCV en vivo"><i class="fa-solid fa-rotate"></i></button>
+                        <input type="number" id="tasa-bcv" step="0.01" oninput="calcularCotizacion()" class="w-20 px-2 py-1 border border-slate-300 dark:border-slate-600 rounded text-right font-bold text-emerald-700 dark:text-emerald-400 bg-white dark:bg-slate-800" placeholder="0.00">
+                        <button onclick="obtenerTasaBCV()" class="p-1 text-blue-600 dark:text-blue-400" title="Actualizar BCV en vivo"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="font-semibold text-slate-700">Tasa USDT (Bs/USDT):</span>
-                    <input type="number" id="tasa-usdt" step="0.01" oninput="calcularCotizacion()" class="w-20 px-2 py-1 border border-slate-300 rounded text-right font-bold text-purple-700 bg-white" placeholder="0.00">
+                    <span class="font-semibold text-slate-700 dark:text-slate-300">Tasa USDT (Bs/USDT):</span>
+                    <input type="number" id="tasa-usdt" step="0.01" oninput="calcularCotizacion()" class="w-20 px-2 py-1 border border-slate-300 dark:border-slate-600 rounded text-right font-bold text-purple-700 dark:text-purple-400 bg-white dark:bg-slate-800" placeholder="0.00">
                 </div>
             </div>
 
             <!-- Selección de Piezas -->
             <div class="space-y-2">
-                <label class="block text-xs font-semibold text-slate-600">Seleccionar Piezas</label>
+                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Seleccionar Piezas</label>
                 <div class="flex gap-2">
-                    <select id="cotizador-select-pieza" class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white">
+                    <select id="cotizador-select-pieza" class="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 dark:text-white">
                         <!-- Dinámico -->
                     </select>
                     <button onclick="agregarPiezaCotizacion()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 transition">+</button>
@@ -241,50 +251,50 @@
             </div>
 
             <!-- Lista de Piezas en la Cotización -->
-            <div id="cotizador-lista" class="space-y-1.5 text-xs border-y py-2 max-h-36 overflow-y-auto">
+            <div id="cotizador-lista" class="space-y-1.5 text-xs border-y dark:border-slate-700 py-2 max-h-36 overflow-y-auto">
                 <p class="text-slate-400 text-center py-2">Ninguna pieza seleccionada</p>
             </div>
 
             <!-- Resumen Total -->
-            <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-1.5 text-xs">
-                <div class="flex justify-between font-bold text-slate-800">
+            <div class="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 p-3 rounded-xl space-y-1.5 text-xs">
+                <div class="flex justify-between font-bold text-slate-800 dark:text-slate-200">
                     <span>Total USD ($):</span>
                     <span id="cotizacion-total-usd">$0.00</span>
                 </div>
-                <div class="flex justify-between font-bold text-emerald-700 text-sm">
+                <div class="flex justify-between font-bold text-emerald-700 dark:text-emerald-400 text-sm">
                     <span>Total Bolívares (BCV):</span>
                     <span id="cotizacion-total-ves">Bs. 0.00</span>
                 </div>
-                <div class="flex justify-between font-bold text-purple-700">
+                <div class="flex justify-between font-bold text-purple-700 dark:text-purple-400">
                     <span>Total USDT:</span>
                     <span id="cotizacion-total-usdt">0.00 USDT</span>
                 </div>
             </div>
 
-            <button onclick="cerrarModalCotizador()" class="w-full bg-slate-900 text-white py-2.5 rounded-xl font-semibold text-xs hover:bg-slate-800 transition">Cerrar Cotizador</button>
+            <button onclick="cerrarModalCotizador()" class="w-full bg-slate-900 dark:bg-slate-700 text-white py-2.5 rounded-xl font-semibold text-xs hover:bg-slate-800 transition">Cerrar Cotizador</button>
         </div>
     </div>
 
     <!-- MODAL RECEPCIÓN DE PINTURA -->
     <div id="modal-recepcion-pintura" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-clock text-purple-600"></i> Confirmar Llegada de Pintura
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl border border-slate-100 dark:border-slate-700">
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-clock text-purple-600 dark:text-purple-400"></i> Confirmar Llegada de Pintura
             </h3>
             <input type="hidden" id="recepcion-pintura-id">
             <div class="space-y-3 text-sm">
-                <p id="recepcion-pintura-info" class="text-xs text-slate-600 font-medium"></p>
+                <p id="recepcion-pintura-info" class="text-xs text-slate-600 dark:text-slate-300 font-medium"></p>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de Llegada</label>
-                    <input type="date" id="recepcion-fecha" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fecha de Llegada</label>
+                    <input type="date" id="recepcion-fecha" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Hora de Llegada (ej. 14:00 o 2:00 PM)</label>
-                    <input type="time" id="recepcion-hora" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Hora de Llegada</label>
+                    <input type="time" id="recepcion-hora" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="cerrarModalRecepcionPintura()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
+                <button onclick="cerrarModalRecepcionPintura()" class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
                 <button onclick="confirmarRetornoPintura()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Confirmar y Añadir a Stock</button>
             </div>
         </div>
@@ -292,31 +302,31 @@
 
     <!-- MODAL NUEVA/EDITAR PIEZA -->
     <div id="modal-pieza" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <h3 id="modal-pieza-titulo" class="font-bold text-lg text-slate-900">Nueva Pieza / Accesorio</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl border border-slate-100 dark:border-slate-700">
+            <h3 id="modal-pieza-titulo" class="font-bold text-lg text-slate-900 dark:text-white">Nueva Pieza / Accesorio</h3>
             <input type="hidden" id="pieza-id">
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Modelo / Marca de Moto</label>
-                    <input type="text" id="pieza-modelo" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. GR 250, Kadi, Ava, Bera...">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Modelo / Marca de Moto</label>
+                    <input type="text" id="pieza-modelo" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. GR 250, Kadi, Ava, Bera...">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Accesorio / Pieza</label>
-                    <input type="text" id="pieza-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. Pechera, Parrilla, Sliders...">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre del Accesorio / Pieza</label>
+                    <input type="text" id="pieza-nombre" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ej. Pechera, Parrilla, Sliders...">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad Inicial</label>
-                        <input type="number" id="pieza-cantidad" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Cantidad Inicial</label>
+                        <input type="number" id="pieza-cantidad" min="0" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Precio Unitario ($)</label>
-                        <input type="number" step="0.01" id="pieza-precio" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Precio Unitario ($)</label>
+                        <input type="number" step="0.01" id="pieza-precio" min="0" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00">
                     </div>
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="cerrarModalPieza()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
+                <button onclick="cerrarModalPieza()" class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
                 <button onclick="guardarPieza()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Guardar</button>
             </div>
         </div>
@@ -324,34 +334,34 @@
 
     <!-- MODAL ENVIAR A DOBLEZ -->
     <div id="modal-doblez" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <h3 class="font-bold text-lg text-slate-900">Enviar a Doblez (Fabricación)</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl border border-slate-100 dark:border-slate-700">
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Enviar a Doblez (Fabricación)</h3>
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Modelo de Moto</label>
-                    <input type="text" id="doblez-modelo" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. GR 250, Kadi, Ava...">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Modelo de Moto</label>
+                    <input type="text" id="doblez-modelo" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. GR 250, Kadi, Ava...">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Accesorio</label>
-                    <input type="text" id="doblez-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Pechera, Parrilla reforzada">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre del Accesorio</label>
+                    <input type="text" id="doblez-nombre" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Pechera, Parrilla reforzada">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad a Fabricar</label>
-                        <input type="number" id="doblez-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="1">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Cantidad a Fabricar</label>
+                        <input type="number" id="doblez-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="1">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Costo Doblez ($ c/u)</label>
-                        <input type="number" step="0.01" id="doblez-costo" min="0" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="0.00">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Costo Doblez ($ c/u)</label>
+                        <input type="number" step="0.01" id="doblez-costo" min="0" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="0.00">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Doblador</label>
-                    <input type="text" id="doblez-taller" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Taller Don Pedro">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre del Doblador</label>
+                    <input type="text" id="doblez-taller" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej. Taller Don Pedro">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="cerrarModalDoblez()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
+                <button onclick="cerrarModalDoblez()" class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
                 <button onclick="guardarEnvioDoblez()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Iniciar Doblez</button>
             </div>
         </div>
@@ -359,38 +369,38 @@
 
     <!-- MODAL ENVIAR A PINTURA -->
     <div id="modal-pintura" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl">
-            <h3 class="font-bold text-lg text-slate-900">Enviar Piezas a Pintura</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-xl border border-slate-100 dark:border-slate-700">
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Enviar Piezas a Pintura</h3>
             <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Modelo de Moto</label>
-                    <input type="text" id="pintura-modelo" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. GR 250, Kadi, Ava...">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Modelo de Moto</label>
+                    <input type="text" id="pintura-modelo" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. GR 250, Kadi, Ava...">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Accesorio</label>
-                    <input type="text" id="pintura-nombre" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Pechera, Sliders">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre del Accesorio</label>
+                    <input type="text" id="pintura-nombre" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Pechera, Sliders">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad a Enviar</label>
-                    <input type="number" id="pintura-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="1">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Cantidad a Enviar</label>
+                    <input type="number" id="pintura-cantidad" min="1" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="1">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Pintor / Taller</label>
-                    <input type="text" id="pintura-taller" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Taller Don José">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nombre del Pintor / Taller</label>
+                    <input type="text" id="pintura-taller" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ej. Taller Don José">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Fecha Estimada de Retorno</label>
-                    <input type="date" id="pintura-fecha" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fecha Estimada de Retorno</label>
+                    <input type="date" id="pintura-fecha" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="cerrarModalPintura()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
+                <button onclick="cerrarModalPintura()" class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2.5 rounded-xl font-semibold text-sm transition">Cancelar</button>
                 <button onclick="guardarEnvioPintura()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">Enviar a Pintura</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK (Compatible) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -418,6 +428,33 @@
         let filtroActual = 'todos';
         let modeloFiltroActual = 'todos';
         let piezasCotizacion = [];
+
+        // MODO OSCURO (DARK MODE)
+        function initDarkMode() {
+            const savedTheme = localStorage.getItem('theme');
+            const icon = document.getElementById('theme-icon');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-400';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-amber-300';
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            if (isDark) {
+                localStorage.setItem('theme', 'dark');
+                icon.className = 'fa-solid fa-sun text-amber-400';
+            } else {
+                localStorage.setItem('theme', 'light');
+                icon.className = 'fa-solid fa-moon text-amber-300';
+            }
+        }
+
+        initDarkMode();
 
         // AUTENTICACIÓN
         function iniciarSesionConGoogle() {
@@ -537,18 +574,18 @@
                 cont.innerHTML = '<p class="text-slate-400 text-center py-2">Ninguna pieza seleccionada</p>';
             } else {
                 piezasCotizacion.forEach(p => {
-                    const mod = p.modelo ? `<span class="text-[10px] text-blue-600 font-bold block">${p.modelo}</span>` : '';
+                    const mod = p.modelo ? `<span class="text-[10px] text-blue-600 dark:text-blue-400 font-bold block">${p.modelo}</span>` : '';
                     cont.innerHTML += `
-                        <div class="flex justify-between items-center bg-slate-100 p-2 rounded-lg">
+                        <div class="flex justify-between items-center bg-slate-100 dark:bg-slate-700/60 p-2 rounded-lg">
                             <div>
                                 ${mod}
-                                <strong class="text-slate-800">${p.nombre}</strong>
-                                <span class="text-slate-500 block">$${Number(p.precio).toFixed(2)} c/u</span>
+                                <strong class="text-slate-800 dark:text-slate-200">${p.nombre}</strong>
+                                <span class="text-slate-500 dark:text-slate-400 block">$${Number(p.precio).toFixed(2)} c/u</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <button onclick="cambiarCantCotizacion('${p.id}', -1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold">-</button>
-                                <span class="font-bold">${p.cant}</span>
-                                <button onclick="cambiarCantCotizacion('${p.id}', 1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold">+</button>
+                                <button onclick="cambiarCantCotizacion('${p.id}', -1)" class="px-2 py-0.5 bg-slate-200 dark:bg-slate-600 rounded font-bold">-</button>
+                                <span class="font-bold dark:text-white">${p.cant}</span>
+                                <button onclick="cambiarCantCotizacion('${p.id}', 1)" class="px-2 py-0.5 bg-slate-200 dark:bg-slate-600 rounded font-bold">+</button>
                             </div>
                         </div>
                     `;
@@ -581,7 +618,7 @@
                 document.getElementById(`nav-${t}`).className = "flex flex-col items-center justify-center text-slate-400 font-medium text-xs gap-1";
             });
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            const colorActivo = tab === 'pintura' ? 'text-purple-600' : 'text-blue-600';
+            const colorActivo = tab === 'pintura' ? 'text-purple-600 dark:text-purple-400' : 'text-blue-600 dark:text-blue-400';
             document.getElementById(`nav-${tab}`).className = `flex flex-col items-center justify-center ${colorActivo} font-medium text-xs gap-1`;
             renderizarTodo();
         }
@@ -598,20 +635,19 @@
             const cont = document.getElementById('contenedor-modelos-filtro');
             cont.innerHTML = '';
 
-            // Obtener modelos únicos agregando GR 250 por defecto si no existe
             const modelosEnBD = inventario.map(p => (p.modelo || 'General').trim());
             const modelosUnicos = Array.from(new Set(['GR 250', ...modelosEnBD]));
 
             const btnTodasClass = modeloFiltroActual === 'todos'
                 ? 'px-3 py-1 rounded-lg bg-blue-600 text-white font-bold whitespace-nowrap shadow-sm'
-                : 'px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap';
+                : 'px-3 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap';
 
             cont.innerHTML += `<button onclick="filtrarModelo('todos')" class="${btnTodasClass}"><i class="fa-solid fa-border-all"></i> Todas</button>`;
 
             modelosUnicos.forEach(m => {
                 const btnClass = modeloFiltroActual.toLowerCase() === m.toLowerCase()
                     ? 'px-3 py-1 rounded-lg bg-blue-600 text-white font-bold whitespace-nowrap shadow-sm'
-                    : 'px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap';
+                    : 'px-3 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap';
 
                 cont.innerHTML += `<button onclick="filtrarModelo('${m}')" class="${btnClass}"><i class="fa-solid fa-motorcycle"></i> ${m}</button>`;
             });
@@ -643,7 +679,6 @@
                 return;
             }
 
-            // Agrupar por Modelo de Moto
             const grupos = {};
             filtradas.forEach(p => {
                 const mod = (p.modelo || 'General').trim();
@@ -657,46 +692,46 @@
 
                 piezas.forEach(p => {
                     const enStock = p.cantidad > 0;
-                    const badgeColor = enStock ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200';
+                    const badgeColor = enStock ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' : 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800';
                     const estadoTexto = enStock ? 'Disponible' : 'Agotado';
 
                     piezasHTML += `
-                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex justify-between items-center">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
-                                    <h4 class="font-bold text-slate-800 text-sm">${p.nombre}</h4>
+                                    <h4 class="font-bold text-slate-800 dark:text-white text-sm">${p.nombre}</h4>
                                     <span class="text-[9px] px-2 py-0.5 rounded-full border ${badgeColor} font-semibold">${estadoTexto}</span>
                                 </div>
-                                <p class="text-xs text-slate-500">Precio: <strong class="text-slate-700">$${Number(p.precio || 0).toFixed(2)}</strong></p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Precio: <strong class="text-slate-700 dark:text-slate-200">$${Number(p.precio || 0).toFixed(2)}</strong></p>
                                 
                                 <div class="flex items-center gap-2 pt-1">
-                                    <span class="text-xs font-bold text-slate-700">Stock: ${p.cantidad}</span>
-                                    <div class="flex items-center bg-slate-100 rounded-lg overflow-hidden border border-slate-200 text-xs shadow-sm">
-                                        <button onclick="cambiarCantidadRapida('${p.id}', -1)" class="px-2 py-0.5 hover:bg-rose-100 hover:text-rose-600 text-slate-600 transition">
+                                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Stock: ${p.cantidad}</span>
+                                    <div class="flex items-center bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-600 text-xs shadow-sm">
+                                        <button onclick="cambiarCantidadRapida('${p.id}', -1)" class="px-2 py-0.5 hover:bg-rose-100 dark:hover:bg-rose-900/40 hover:text-rose-600 dark:hover:text-rose-300 text-slate-600 dark:text-slate-300 transition">
                                             <i class="fa-solid fa-minus"></i>
                                         </button>
-                                        <span class="px-1 text-slate-300">|</span>
-                                        <button onclick="cambiarCantidadRapida('${p.id}', 1)" class="px-2 py-0.5 hover:bg-emerald-100 hover:text-emerald-600 text-slate-600 transition">
+                                        <span class="px-1 text-slate-300 dark:text-slate-500">|</span>
+                                        <button onclick="cambiarCantidadRapida('${p.id}', 1)" class="px-2 py-0.5 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 hover:text-emerald-600 dark:hover:text-emerald-300 text-slate-600 dark:text-slate-300 transition">
                                             <i class="fa-solid fa-plus"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-1">
-                                <button onclick="editarPieza('${p.id}')" class="p-1.5 text-slate-400 hover:text-blue-600 transition"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="eliminarPieza('${p.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 transition"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="editarPieza('${p.id}')" class="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="eliminarPieza('${p.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                     `;
                 });
 
                 contenedor.innerHTML += `
-                    <div class="bg-slate-100/70 border border-slate-200 rounded-2xl p-3 space-y-2.5">
+                    <div class="bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-3 space-y-2.5">
                         <div class="flex justify-between items-center px-1">
-                            <h3 class="font-bold text-xs uppercase tracking-wider text-blue-900 flex items-center gap-2">
-                                <i class="fa-solid fa-motorcycle text-blue-600"></i> ${modelo}
+                            <h3 class="font-bold text-xs uppercase tracking-wider text-blue-900 dark:text-blue-400 flex items-center gap-2">
+                                <i class="fa-solid fa-motorcycle text-blue-600 dark:text-blue-400"></i> ${modelo}
                             </h3>
-                            <span class="text-[10px] bg-blue-200 text-blue-800 font-bold px-2 py-0.5 rounded-full">${piezas.length} ${piezas.length === 1 ? 'accesorio' : 'accesorios'}</span>
+                            <span class="text-[10px] bg-blue-200 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 font-bold px-2 py-0.5 rounded-full">${piezas.length} ${piezas.length === 1 ? 'accesorio' : 'accesorios'}</span>
                         </div>
                         <div class="space-y-2">
                             ${piezasHTML}
@@ -726,7 +761,7 @@
                 if (e === estado) {
                     btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium whitespace-nowrap";
                 } else {
-                    btn.className = "px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 font-medium whitespace-nowrap";
+                    btn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium whitespace-nowrap";
                 }
             });
             renderizarInventario();
@@ -807,23 +842,23 @@
 
             const doblezActivo = doblezTaller.filter(i => i.estado === 'En Doblez');
             if (doblezActivo.length === 0) {
-                contDoblez.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">No hay piezas en proceso de doblez.</div>`;
+                contDoblez.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No hay piezas en proceso de doblez.</div>`;
             } else {
                 doblezActivo.forEach(item => {
                     enDoblezCount += item.cantidad;
                     const mod = item.modelo ? `[${item.modelo}] ` : '';
                     contDoblez.innerHTML += `
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
+                        <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 text-xs">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-sm">${mod}${item.nombre}</h4>
-                                    <p class="text-slate-500">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
-                                    <p class="text-amber-600 font-medium">Costo unitario: $${Number(item.costo || 0).toFixed(2)} (Total: $${(item.cantidad * (item.costo || 0)).toFixed(2)})</p>
+                                    <h4 class="font-bold text-slate-800 dark:text-white text-sm">${mod}${item.nombre}</h4>
+                                    <p class="text-slate-500 dark:text-slate-400">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
+                                    <p class="text-amber-600 dark:text-amber-400 font-medium">Costo unitario: $${Number(item.costo || 0).toFixed(2)} (Total: $${(item.cantidad * (item.costo || 0)).toFixed(2)})</p>
                                 </div>
-                                <span class="px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-200 font-semibold text-[10px]">${item.estado}</span>
+                                <span class="px-2 py-0.5 rounded-full border bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 font-semibold text-[10px]">${item.estado}</span>
                             </div>
-                            <div class="flex justify-end gap-2 pt-1 border-t border-slate-100">
-                                <button onclick="eliminarProcesoDoblez('${item.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                            <div class="flex justify-end gap-2 pt-1 border-t border-slate-100 dark:border-slate-700">
+                                <button onclick="eliminarProcesoDoblez('${item.id}')" class="bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 dark:text-rose-300 px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
                                     <i class="fa-solid fa-trash"></i> Eliminar
                                 </button>
                                 <button onclick="pasarDeDoblezAPintura('${item.id}')" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
@@ -837,7 +872,7 @@
 
             const pinturaActiva = pinturaTaller.filter(i => i.estado === 'En Taller');
             if (pinturaActiva.length === 0) {
-                contPintura.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">No hay piezas en pintura.</div>`;
+                contPintura.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">No hay piezas en pintura.</div>`;
             } else {
                 pinturaActiva.forEach(item => {
                     enPinturaCount += item.cantidad;
@@ -851,20 +886,20 @@
                 const mod = item.modelo ? `[${item.modelo}] ` : '';
 
                 contPintura.innerHTML += `
-                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
+                    <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 text-xs">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="font-bold text-slate-800 text-sm">${mod}${item.nombre}</h4>
-                                <p class="text-slate-500">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
+                                <h4 class="font-bold text-slate-800 dark:text-white text-sm">${mod}${item.nombre}</h4>
+                                <p class="text-slate-500 dark:text-slate-400">Taller: ${item.taller} | Cantidad: <strong>${item.cantidad}</strong></p>
                             </div>
-                            <span class="px-2 py-0.5 rounded-full border bg-purple-50 text-purple-700 border-purple-200 font-semibold text-[10px]">${item.estado}</span>
+                            <span class="px-2 py-0.5 rounded-full border bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 font-semibold text-[10px]">${item.estado}</span>
                         </div>
-                        <div class="text-slate-400 flex justify-between pt-1 border-t border-slate-100">
+                        <div class="text-slate-400 dark:text-slate-400 flex justify-between pt-1 border-t border-slate-100 dark:border-slate-700">
                             <span>Envío: ${item.fechaEnvio || 'N/D'}</span>
                             <span>Est: ${item.fechaEstimada || 'N/D'}</span>
                         </div>
-                        <div class="flex justify-end gap-2 pt-1 border-t border-slate-100">
-                            <button onclick="eliminarProcesoPintura('${item.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
+                        <div class="flex justify-end gap-2 pt-1 border-t border-slate-100 dark:border-slate-700">
+                            <button onclick="eliminarProcesoPintura('${item.id}')" class="bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 dark:text-rose-300 px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
                                 <i class="fa-solid fa-trash"></i> Eliminar
                             </button>
                             <button onclick="abrirModalRecepcionPintura('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition flex items-center gap-1">
@@ -1099,21 +1134,21 @@
             const enPinturaCount = pinturaTaller.filter(p => p.estado === 'En Taller').reduce((acc, curr) => acc + curr.cantidad, 0);
 
             document.getElementById('resumen-estados').innerHTML = `
-                <div class="flex justify-between py-1 border-b border-slate-100">
-                    <span class="text-slate-600">Accesorios en stock</span>
-                    <span class="font-bold text-slate-800">${disponibles}</span>
+                <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700">
+                    <span class="text-slate-600 dark:text-slate-400">Accesorios en stock</span>
+                    <span class="font-bold text-slate-800 dark:text-white">${disponibles}</span>
                 </div>
-                <div class="flex justify-between py-1 border-b border-slate-100">
-                    <span class="text-slate-600">Accesorios agotados</span>
-                    <span class="font-bold text-rose-600">${agotadas}</span>
+                <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700">
+                    <span class="text-slate-600 dark:text-slate-400">Accesorios agotados</span>
+                    <span class="font-bold text-rose-600 dark:text-rose-400">${agotadas}</span>
                 </div>
-                <div class="flex justify-between py-1 border-b border-slate-100">
-                    <span class="text-slate-600">Piezas en Doblez</span>
-                    <span class="font-bold text-amber-600">${enDoblezCount}</span>
+                <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-700">
+                    <span class="text-slate-600 dark:text-slate-400">Piezas en Doblez</span>
+                    <span class="font-bold text-amber-600 dark:text-amber-400">${enDoblezCount}</span>
                 </div>
                 <div class="flex justify-between py-1">
-                    <span class="text-slate-600">Piezas en Pintura</span>
-                    <span class="font-bold text-purple-600">${enPinturaCount}</span>
+                    <span class="text-slate-600 dark:text-slate-400">Piezas en Pintura</span>
+                    <span class="font-bold text-purple-600 dark:text-purple-400">${enPinturaCount}</span>
                 </div>
             `;
         }
